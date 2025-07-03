@@ -80,15 +80,15 @@
                     <Label Text="{Binding ItemFichaSelecionada.descItem}" Grid.Row="1" Grid.ColumnSpan="4" FontSize="12"  FontAttributes="Bold"/>
                     <Rectangle HeightRequest="1" Fill="LightGray" HorizontalOptions="FillAndExpand" Grid.Row="2" Grid.ColumnSpan="5"/>
                     <!--Cabecalho-->
-                    <Label Text="Mascara"      Style="{StaticResource lblCabec}" Grid.Row="3" Grid.Column="0"></Label>
-                    <Label Text="Saldo"       Style="{StaticResource lblCabec}" Grid.Row="3" Grid.Column="1"></Label>
+                    <Label Text="Mascara"   Style="{StaticResource lblCabec}" Grid.Row="3" Grid.Column="0"></Label>
+                    <Label Text="Saldo"     Style="{StaticResource lblCabec}" Grid.Row="3" Grid.Column="1"></Label>
                     <Label Text="Localiza"  Style="{StaticResource lblCabec}" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2"></Label>
                     
 
                         <!--Detalhe-->
-                    <Label Text="{Binding ItemFichaSelecionada.qtMascara}" Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="0"></Label>
-                    <Label Text="{Binding ItemFichaSelecionada.qtSaldo}"   Style="{StaticResource lblDet}" Grid.Row="5" Grid.Column="1"></Label>
-                    <Label Text="{Binding ItemFichaSelecionada.codLocaliza}"        Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2"></Label>
+                    <Label Text="{Binding ItemFichaSelecionada.qtMascara}"   Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="0"></Label>
+                    <Label Text="{Binding ItemFichaSelecionada.qtSaldo}"     Style="{StaticResource lblDet}" Grid.Row="5" Grid.Column="1"></Label>
+                    <Label Text="{Binding ItemFichaSelecionada.codLocaliza}" Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2"></Label>
                     
                    
 
@@ -96,28 +96,28 @@
 
                 <Grid Padding="1" RowDefinitions="*,20,*,*,*" ColumnDefinitions="*,*,*,*" ColumnSpacing="20" Margin="0,0">
                     <!--Cabecalho-->
-                    <Label Text="QtPagar"      Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="0"></Label>
-                    <Label Text="QtRenovar"       Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="1"></Label>
+                    <Label Text="QtPagar"     Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="0"></Label>
+                    <Label Text="QtRenovar"   Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="1"></Label>
                     <Label Text="QtExtrakit"  Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="2"></Label>
-                    <Label Text="QtRuim"       Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="3"></Label>
+                    <Label Text="QtRuim"      Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="3"></Label>
                     <!--Detalhe-->
-                    <Label Text="{Binding ItemFichaSelecionada.qtPagar}" Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="0"></Label>
-                    <Label Text="{Binding ItemFichaSelecionada.qtRenovar}"   Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="1"></Label>
-                    <Label Text="{Binding ItemFichaSelecionada.qtExtrakit}"        Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="2"></Label>
-                    <Label Text="{Binding ItemFichaSelecionada.qtRuim}"   Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="3"></Label>
+                    <Label Text="{Binding ItemFichaSelecionada.qtPagar}"    Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="0"></Label>
+                    <Label Text="{Binding ItemFichaSelecionada.qtRenovar}"  Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="1"></Label>
+                    <Label Text="{Binding ItemFichaSelecionada.qtExtrakit}" Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="2"></Label>
+                    <Label Text="{Binding ItemFichaSelecionada.qtRuim}"     Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="3"></Label>
 
                 </Grid>
 
 
                 <Grid Padding="1" RowDefinitions="*,20,*,*,*" ColumnDefinitions="*,*,*,*" ColumnSpacing="20" Margin="0,0">
                     <!--Cabecalho-->
-                    <Label Text="NumOS"      Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="0"></Label>
-                    <Label Text="Kit"       Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"></Label>
-                    <Label Text="Tipo"       Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="3"></Label>
+                    <Label Text="NumOS"    Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="0"></Label>
+                    <Label Text="Kit"      Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"></Label>
+                    <Label Text="Tipo"     Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="3"></Label>
                     <!--Detalhe-->
                     <Label Text="{Binding ItemFichaSelecionada.numOS}" Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="0"></Label>
                     <Label Text="{Binding ItemFichaSelecionada.kit}"   Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"></Label>
-                    <Label Text="{Binding ItemFichaSelecionada.tipo}"   Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="3"></Label>
+                    <Label Text="{Binding ItemFichaSelecionada.tipo}"  Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="3"></Label>
 
                 </Grid>
 
@@ -125,11 +125,11 @@
                     <!--Cabecalho-->
                     <Label Text="Qt Terc"      Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="0"></Label>
                     <Label Text="Qt DAT"       Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="1"></Label>
-                    <Label Text="NotaAnt"       Style="{StaticResource lblCabec}" Grid.Row="3" Grid.Column="2"></Label>
+                    <Label Text="NotaAnt"      Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="2"></Label>
                     <!--Detalhe-->
-                    <Label Text="{Binding ItemFichaSelecionada.qtTerc}" Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="0"></Label>
+                    <Label Text="{Binding ItemFichaSelecionada.qtTerc}"  Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="0"></Label>
                     <Label Text="{Binding ItemFichaSelecionada.qtDAT}"   Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="1"></Label>
-                    <Label Text="{Binding ItemFichaSelecionada.notaAnt}"   Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="2"></Label>
+                    <Label Text="{Binding ItemFichaSelecionada.notaAnt}" Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="2"></Label>
 
                 </Grid>
 

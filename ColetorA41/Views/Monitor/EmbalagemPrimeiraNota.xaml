@@ -132,10 +132,10 @@
                             <Entry Grid.Row="2" Grid.Column="1" HeightRequest="50" IsEnabled="{Binding IsAereo}" Keyboard="Numeric"></Entry>
 
                             <Label Grid.Row="3" Text="Peso Líquido" Style="{StaticResource lblCabec}"></Label>
-                            <Entry Grid.Row="3" HeightRequest="50" Text="{Binding DadosNotaFiscal.pesoliq}" Keyboard="Numeric"></Entry>
-
+                            <Entry Grid.Row="3" HeightRequest="50" Text="{Binding DadosNotaFiscal.pesoliq}" Keyboard="Telephone"></Entry>
+                            
                             <Label Grid.Row="3" Grid.Column="1" Text="Peso Bruto" Style="{StaticResource lblCabec}" ></Label>
-                            <Entry Grid.Row="3" Grid.Column="1" HeightRequest="50" Text="{Binding DadosNotaFiscal.pesobru}" Keyboard="Numeric"></Entry>
+                            <Entry Grid.Row="3" Grid.Column="1" HeightRequest="50" Text="{Binding DadosNotaFiscal.pesobru}" Keyboard="Telephone"></Entry>
                         </Grid>
                     </VerticalStackLayout>
                     <VerticalStackLayout VerticalOptions="End">

@@ -94,6 +94,12 @@
 	<ItemGroup>
 	  <Compile Remove="ViewModel\CalculoDadosNF.cs" />
 	  <Compile Remove="ViewModel\CalculoDadosNFBase.cs" />
+	  <Compile Remove="Views\Calculo\ExtrakitView - Cópia.xaml.cs" />
+	  <Compile Remove="Views\Calculo\ResumoDetalheItem - Cópia.xaml.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Remove="Views\Calculo\ResumoDetalheItem - Cópia.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -160,6 +166,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Calculo\Resumo.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Calculo\ResumoDetalheEntrada.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Calculo\ResumoDetalhePagto.xaml">

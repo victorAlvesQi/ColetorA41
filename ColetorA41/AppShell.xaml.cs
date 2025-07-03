@@ -24,6 +24,7 @@ namespace ColetorA41
             Routing.RegisterRoute(nameof(ExtrakitView)  , typeof(ExtrakitView));
             Routing.RegisterRoute(nameof(Resumo)        , typeof(Resumo));
             Routing.RegisterRoute(nameof(ResumoDetalhe) , typeof(ResumoDetalhe));
+            Routing.RegisterRoute(nameof(ResumoDetalheEntrada), typeof(ResumoDetalheEntrada)); //FAS
             Routing.RegisterRoute(nameof(ResumoDetalhePago), typeof(ResumoDetalhePago));
             Routing.RegisterRoute(nameof(ResumoDetalheItem), typeof(ResumoDetalheItem));
             Routing.RegisterRoute(nameof(LeituraENC)    , typeof(LeituraENC));

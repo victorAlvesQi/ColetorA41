@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Configuration;
 using CommunityToolkit.Maui.Views;
+//using Android.Provider;
 
 namespace ColetorA41.ViewModel
 {
@@ -254,14 +255,30 @@ namespace ColetorA41.ViewModel
                 NrProcess = ProcessoEstabSelecionado.nrprocess,
                 
             });
+            //fas
+            DadosNotaFiscal = new(); //limpa dados antes de carregar
 
-            DadosNotaFiscal = resp.nfs[0];
-            //Popular Dados Nota Fiscal
-            DadosNotaFiscal.volume = DadosNotaFiscal.volume ?? "";
-            DadosNotaFiscal.pesobru = "0,001";
-            DadosNotaFiscal.pesoliq = "0,001";
+            if (resp.nfs.Count() > 0)
+            {
+                DadosNotaFiscal = resp.nfs[0];
+            
+                //Popular Dados Nota Fiscal
+                DadosNotaFiscal.volume = DadosNotaFiscal.volume ?? "";
+            
 
-            DadosNotaFiscal.nrprocess = ProcessoEstabSelecionado.nrprocess.ToString();
+                DadosNotaFiscal.pesobru = "0.001";
+                DadosNotaFiscal.pesoliq = "0.001";
+
+                DadosNotaFiscal.nrprocess = ProcessoEstabSelecionado.nrprocess.ToString();
+            }
+            else
+            {
+    
+                var mensa = new Mensagem("warning", "Embalagem", "Primeira Nota não encontrada, dados da Embalagem não serão salvos!");
+                await Shell.Current.CurrentPage.ShowPopupAsync(mensa);
+                //return;
+            }
+            
             IsBusy = false;
         }
 

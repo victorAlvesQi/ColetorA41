@@ -9,13 +9,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 //using ColetorA41.Pages;
 
+using System.Globalization; //FAS
+
 namespace ColetorA41
 {
     public static class MauiProgram
     {
         public static MauiApp CreateMauiApp()
         {
+
             var builder = MauiApp.CreateBuilder();
+            
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-BR"); //FAS
+            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("pt-BR"); //FAS
+
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
@@ -75,6 +82,7 @@ namespace ColetorA41
             builder.Services.AddTransient<ColetorA41.Views.Calculo.Resumo>();
             builder.Services.AddTransient<ResumoDetalhe>();
             builder.Services.AddTransient<ResumoDetalhePago>();
+            builder.Services.AddTransient<ResumoDetalheEntrada>(); //FAS
             builder.Services.AddTransient<ResumoDetalheItem>();
             builder.Services.AddTransient<Erro>();
             builder.Services.AddTransient<Processos>();

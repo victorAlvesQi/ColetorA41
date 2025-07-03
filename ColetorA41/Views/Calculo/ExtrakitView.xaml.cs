@@ -1,3 +1,4 @@
+using System.Globalization;
 using ColetorA41.ViewModel;
 using CommunityToolkit.Maui.Views;
 
@@ -26,4 +27,25 @@ public partial class ExtrakitView : ContentPage
         Shell.Current.CurrentPage.ShowPopup(mensa);
         return true;
     }
+
+    //FAS
+    public class CodigoToColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var codigo = value?.ToString() ?? string.Empty;
+
+            if (codigo.StartsWith("8"))
+                return Colors.Red;  // Cor vermelha se começar com 8
+
+            return Colors.Black;   // Senão, cor preta
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }
+

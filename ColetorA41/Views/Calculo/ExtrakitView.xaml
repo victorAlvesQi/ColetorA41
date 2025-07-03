@@ -6,8 +6,14 @@
              xmlns:models="clr-namespace:ColetorA41.Models"
              x:DataType="viewmodel:CalculoViewModel"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:conversor="clr-namespace:ColetorA41.Views.Calculo"
               Shell.NavBarIsVisible="False"
              Title="Extrakit">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conversor:CodigoToColorConverter x:Key="CodigoToColorConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <Grid RowDefinitions="auto,*,60,5">
         <StackLayout>
             <Grid RowDefinitions="100">
@@ -119,6 +125,7 @@
                                     <Label Grid.Row="0"
                                                Grid.Column="0"
                                                Text="{Binding itCodigo}"
+                                               TextColor="{Binding numOS, Converter={StaticResource CodigoToColorConverter}}"
                                                FontSize="16"
                                                FontAttributes="Bold" />
 

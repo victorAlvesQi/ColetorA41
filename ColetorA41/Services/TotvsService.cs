@@ -67,7 +67,7 @@ namespace ColetorA41.Services
                 //Testar Versao
                 if (!await VerificarVersaoMobile(AppInfo.Current.VersionString))
                 {
-                    throw new Exception("Versão Inválida");
+                   throw new Exception("Versão Inválida: " + AppInfo.Current.VersionString);
                 }
 
                 //Setar Usuario Ambiente para manter logado

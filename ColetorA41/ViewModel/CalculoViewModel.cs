@@ -82,7 +82,6 @@ namespace ColetorA41.ViewModel
         public ObservableCollection<Estabelecimento> listaEstab { get; private set; } = new();
         public ObservableRangeCollection<Tecnico> listaTecnico { get; private set; } = new();
         public ObservableCollection<Enc> listaEnc { get; private set; } = new();
-
         public ObservableCollection<Transporte> listaTranspCompleta { get; private set; } = new();
         public ObservableCollection<Transporte> listaTransporteEntra { get; private set; } 
         public ObservableCollection<Transporte> listaTransporteSai { get; private set; } 
@@ -95,7 +94,6 @@ namespace ColetorA41.ViewModel
         public ObservableCollection<Semsaldo> listaSemSaldo { get; private set; } = new();
         public ObservableCollection<Models.Resumo> listaResumo { get; private set; } = new ();
         public ObservableRangeCollection<ItemFicha> listaItensFicha { get; private set; } = new();
-
         public ObservableCollection<ItemFicha> listaPagtos { get; private set; }  = new();
         #endregion
 
@@ -470,7 +468,37 @@ namespace ColetorA41.ViewModel
           
             await Shell.Current.GoToAsync($"{nameof(EstabTec)}");
         }
+        
+        [RelayCommand]
+        async Task ChamarResumoDetalhe(string tipoFicha)
+        {
+            if (tipoFichaSelecionado != tipoFicha)
+            {
+                //listaItensFicha.Clear();
+                tipoFichaSelecionado = tipoFicha;
 
+            }
+            listaItensFicha.Clear();
+            await this.CarregarFichas();
+            await Shell.Current.GoToAsync($"{nameof(ResumoDetalhe)}");
+        }
+
+        //FAS
+        [RelayCommand]
+        async Task ChamarResumoDetalheEntrada(string tipoFicha)
+        {
+            if (tipoFichaSelecionado != tipoFicha)
+            {
+                //listaItensFicha.Clear();
+                tipoFichaSelecionado = tipoFicha;
+
+            }
+            //v01 listaItensFicha.Clear();
+            await this.CarregarFichas();
+            await Shell.Current.GoToAsync($"{nameof(ResumoDetalheEntrada)}"); //FAS
+        }
+
+        /*junim
         [RelayCommand]
         async Task ChamarResumoDetalhe(string tipoFicha)
         {
@@ -484,7 +512,7 @@ namespace ColetorA41.ViewModel
             await this.CarregarFichas();
             await Shell.Current.GoToAsync($"{nameof(ResumoDetalhe)}");
         }
-
+        */
         [RelayCommand]
         async Task ChamarResumoDetalhePagto(string tipoFicha)
         {
@@ -501,10 +529,13 @@ namespace ColetorA41.ViewModel
         [RelayCommand]
         async Task CarregarFichas()
         {
-            
+
+            //this.listaItensFicha.Clear();
             //Adicionar Extrakit fora do processo na selecao do Geral
             if (this.TipoFichaSelecionado == "Geral" && this.listaItensFicha.Count <= 0)
             {
+                this.controle = 0; //FAS
+
                 foreach (var item in this.listaExtrakitNaoSelecionados)
                 {
                     listaItensFicha.Add(new ItemFicha
@@ -519,24 +550,40 @@ namespace ColetorA41.ViewModel
                         qtSaldo = item.qtSaldo,
                         qtExtrakit = item.qtSaldo,
                         notaAnt = item.nroDocto,
-                        material="etforaprocesso"
+                        material = "etforaprocesso"
                     });
 
                     //Sera preciso descontar esta qtidade de registros 
                     this.controle = this.controle + 1;
                 }
-                
+
             }
 
             //Itens sem saldo nao sera paginado
             if (this.TipoFichaSelecionado == "SemSaldo" && this.listaItensFicha.Count > 0)
                 return;
 
-
+            if (this.TipoFichaSelecionado == "Geral")
+            {
+                
+            }
+            else
+            {
+                if ((listaItensFicha.Count() - this.controle) < 20)
+                {
+                    //this.listaItensFicha.Clear();
+                }
+            }
             // if (IsBusy) return;
             IsBusy = true;
 
-            var lista = await _service.ObterItensCalculoMobile(TipoCalculo, TipoFichaSelecionado, NrProcessSelecionado, listaItensFicha.Count() - this.controle, 20, BuscaItemFicha);
+            var lista = await _service.ObterItensCalculoMobile(TipoCalculo,
+                                                               TipoFichaSelecionado, 
+                                                               NrProcessSelecionado, 
+                                                               listaItensFicha.Count() - this.controle, 
+                                                               20, 
+                                                               BuscaItemFicha);
+
             listaItensFicha.AddRange(lista.items);
 
             IsBusy = false;
@@ -544,9 +591,9 @@ namespace ColetorA41.ViewModel
 
         async Task CarregarFichasPagto()
         {
+
            
         }
-
 
         [RelayCommand]
         async Task CarregarTecnicosEstabelecimento()
@@ -576,8 +623,7 @@ namespace ColetorA41.ViewModel
                 var msg = new Mensagem("erro", "Erro", ex.Message);
                 await Shell.Current.ShowPopupAsync(msg);
                
-            }
-            
+            }            
 
         }
 
@@ -668,8 +714,6 @@ namespace ColetorA41.ViewModel
 
             await Shell.Current.GoToAsync($"{nameof(LoginAlmoxa)}");
         }
-
-
 
         [RelayCommand]
         async Task LeituraENC(string numEnc)
@@ -1016,9 +1060,7 @@ namespace ColetorA41.ViewModel
         {
             //await Shell.Current.GoToAsync($"{nameof(ResumoDetalhe)}");
             await Shell.Current.GoToAsync("..");
-        }
-
-        
+        }        
 
         [RelayCommand]
         async Task RadioTipoCalculo()
@@ -1075,9 +1117,7 @@ namespace ColetorA41.ViewModel
         }
         #endregion
 
-        #region Funcoes Locais
-
-        
+        #region Funcoes Locais        
 
         public void resetGeral()
         {
@@ -1142,9 +1182,7 @@ namespace ColetorA41.ViewModel
             {
                 this.listaEstab.Add(item);
             }
-            this.IsBusy = false;
-
-            
+            this.IsBusy = false;            
 
         }
 
@@ -1181,7 +1219,6 @@ namespace ColetorA41.ViewModel
 
             this.IsBusy = false;
         }
-
         public async Task ObterTransporte()
         {
             this.IsBusy = true;
@@ -1197,7 +1234,6 @@ namespace ColetorA41.ViewModel
             listaTransporteEntra = new(this.listaTranspCompleta);
             listaTransporteSai = new(this.listaTranspCompleta);
         }
-
         public async Task ObterEntrega()
         {
             this.IsBusy = true;
@@ -1212,7 +1248,6 @@ namespace ColetorA41.ViewModel
 
             
         }
-
         public async Task ObterParametrosEstab()
         {
             this.IsBusy = true;
@@ -1247,7 +1282,6 @@ namespace ColetorA41.ViewModel
             }
             this.IsBusy = false;
         }
-
         public async Task ObterDados()
         {
             this.IsBusy = true;
@@ -1257,7 +1291,6 @@ namespace ColetorA41.ViewModel
             this.NrProcessSelecionado = await _service.ObterNrProcesso(this.EstabSelecionado.codEstab, this.TecnicoSelecionado.codTec);
             this.IsBusy = false;
         }
-
         async Task AtualizaLblBotoes(int tipo)
         {
             switch (tipo)
@@ -1283,7 +1316,6 @@ namespace ColetorA41.ViewModel
                     break;
             }
         }
-
         public async Task PrepararCalculo()
         {
             this.IsBusy = true;
@@ -1333,7 +1365,6 @@ namespace ColetorA41.ViewModel
             //await this.ChamarResumo();
 
         }
-
         public async Task AtualizarLabelsContadores(int tipoCalculo)
         {
 
@@ -1348,8 +1379,6 @@ namespace ColetorA41.ViewModel
             {
                 totalET += x.qtDisp;
             }
-
-
 
             //Geral
             Fichas.Geral = item.qtGeral + totalET;
@@ -1400,7 +1429,6 @@ namespace ColetorA41.ViewModel
             this.IsBusy = false;
 
         }
-
         public async Task ObterEncs()
         {
             this.IsBusy = true;
@@ -1417,8 +1445,6 @@ namespace ColetorA41.ViewModel
            
 
         }
-
-
 
         #endregion
     }

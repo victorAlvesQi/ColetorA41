@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ColetorA41.Views.Calculo.ResumoDetalhe"
+             x:Class="ColetorA41.Views.Calculo.ResumoDetalheEntrada"
              xmlns:viewmodel="clr-namespace:ColetorA41.ViewModel"
              xmlns:models="clr-namespace:ColetorA41.Models"
              x:DataType="viewmodel:CalculoViewModel"
@@ -9,7 +9,7 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
               Shell.NavBarIsVisible="False"
                x:Name="detalhe"
-             Title="Resumo Detalhe">
+             Title="Resumo Detalhe Entrada">
 
     <ContentPage.Resources>
         <local:TipoFicha x:Key="TipoFicha" />
@@ -28,7 +28,6 @@
 
         </Style>
     </ContentPage.Resources>
-
 
     <Grid RowDefinitions="100,*,60,5">
         <StackLayout>
@@ -88,7 +87,6 @@
             </SearchBar>
         </Border>
 
-
         <CollectionView x:Name="lista" Grid.Row="1" Margin="0,20" HorizontalOptions="Center" 
                                   ItemsSource="{Binding listaItensFicha}" 
                                   RemainingItemsThreshold="4"
@@ -98,12 +96,12 @@
             <CollectionView.Header>
                 <HorizontalStackLayout HorizontalOptions="Center" Margin="0,10" VerticalOptions="Center" Spacing="5">
                     <Image  Source="attention.png" HeightRequest="20"  HorizontalOptions="Center"/>
-                    <Label Text="Arraste a ficha para esquerda para detalhes" FontAttributes="Bold" TextColor="{StaticResource dnBlue}"></Label>
+                    <Label Text="Arraste a ficha para esquerda para detalhes." FontAttributes="Bold" TextColor="{StaticResource dnBlue}"></Label>
                 </HorizontalStackLayout>
 
             </CollectionView.Header>
             <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:ItemFicha">
+                <DataTemplate x:DataType="models:ItemFicha">
                     <SwipeView>
                         <SwipeView.RightItems>
                             <SwipeItems Mode="Execute">
@@ -128,15 +126,15 @@
 
                                     <Label Text="{Binding descItem}" Grid.Row="1" Grid.ColumnSpan="3" FontSize="12" LineBreakMode="NoWrap"/>
 
-                                    
+
                                     <Rectangle HeightRequest="1" Fill="LightGray" HorizontalOptions="FillAndExpand" Grid.Row="2" Grid.ColumnSpan="5"/>
                                     <!--Cabecalho-->
-                                    <Label Text="QtPagar"      Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="0"></Label>
+                                    <Label Text="QtBom"        Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="0"></Label>
                                     <Label Text="QtRenovar"    Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="1"></Label>
                                     <Label Text="QtExtrakit"   Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="2"></Label>
                                     <Label Text="QtRuim"       Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="3"></Label>
                                     <Label Text="Saldo"        Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="4"></Label>
-                                   
+
 
                                     <!--Detalhe-->
                                     <Label Text="{Binding qtPagar}"    Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="0"></Label>
@@ -144,17 +142,16 @@
                                     <Label Text="{Binding qtExtrakit}" Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="2"></Label>
                                     <Label Text="{Binding qtRuim}"     Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="3"></Label>
                                     <Label Text="{Binding qtSaldo}"    Style="{StaticResource lblDet}" Grid.Row="4" Grid.Column="4"></Label>
-                                    
+
                                 </Grid>
 
-                                
+
                             </VerticalStackLayout>
                         </Border>
                     </SwipeView>
                 </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
         <Grid ColumnDefinitions="*,*,*" Grid.Row="2" >
             <VerticalStackLayout  Grid.Column="0" HorizontalOptions="Center">

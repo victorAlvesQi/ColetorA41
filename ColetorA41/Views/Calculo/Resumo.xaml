@@ -198,7 +198,7 @@
                 <HorizontalStackLayout HorizontalOptions="Center" >
                     <Frame CornerRadius="20" HasShadow="True"  Margin="10,0" WidthRequest="150" HeightRequest="90" Padding="0" BackgroundColor="White">
                     <Frame.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ChamarResumoDetalheCommand}" CommandParameter="SoEntrada" />
+                        <TapGestureRecognizer Command="{Binding ChamarResumoDetalheEntradaCommand}" CommandParameter="SoEntrada" />
                     </Frame.GestureRecognizers>
                     <Grid RowDefinitions="*,*,auto" ColumnDefinitions="*,6">
                         <Frame CornerRadius="20" HasShadow="True" HorizontalOptions="Start" VerticalOptions="Start" WidthRequest="50" HeightRequest="30" BackgroundColor="{StaticResource dnWhite}" Padding="1"  BorderColor="{StaticResource dnLightGreen}">
