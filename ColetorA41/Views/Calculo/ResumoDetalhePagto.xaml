@@ -70,9 +70,10 @@
             </VerticalStackLayout>
         </StackLayout>
        
-        <CollectionView x:Name="lista" Grid.Row="2" 
-                                  ItemsSource="{Binding listaPagtos}" 
-                                  VerticalScrollBarVisibility="Always">
+        <ScrollView Grid.Row="2" VerticalScrollBarVisibility="Always" Orientation="Vertical">
+            <CollectionView x:Name="lista"
+                                      ItemsSource="{Binding listaPagtos}" 
+                                      VerticalScrollBarVisibility="Always">
            
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:ItemFicha">
@@ -117,6 +118,7 @@
                 </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+        </ScrollView>
             
 
         <Grid ColumnDefinitions="*,*,*" Grid.Row="3" >

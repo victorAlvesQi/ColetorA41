@@ -94,12 +94,13 @@
                 <RefreshView IsRefreshing="{Binding IsRefreshing}"
                              Command="{Binding AtualizarListaProcessosCommand}">
 
-                    <CollectionView x:Name="lista"  
-                                ItemsSource="{Binding listaProcessosEstab}" 
-                                SelectedItem="{Binding ProcessoSelecionado}"
-                                SelectionMode="None"
-                                EmptyView="Processo em Aberto do Estabelecimento"
-                                VerticalScrollBarVisibility="Always">
+                    <ScrollView VerticalScrollBarVisibility="Always" Orientation="Vertical">
+                        <CollectionView x:Name="lista"  
+                                    ItemsSource="{Binding listaProcessosEstab}" 
+                                    SelectedItem="{Binding ProcessoSelecionado}"
+                                    SelectionMode="None"
+                                    EmptyView="Processo em Aberto do Estabelecimento"
+                                    VerticalScrollBarVisibility="Always">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:ProcessosEstab">
                                 <SwipeView>
@@ -145,6 +146,7 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
+                    </ScrollView>
                 </RefreshView>
             </Border>
         </Grid>

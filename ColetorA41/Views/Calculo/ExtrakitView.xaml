@@ -96,6 +96,7 @@
 
 
         <Grid Grid.Row="1" Margin="0,5,0,0">
+            <ScrollView VerticalScrollBarVisibility="Always" Orientation="Vertical">
                 <CollectionView x:Name="lista" 
                                   ItemsSource="{Binding listaExtrakit}" 
                                   SelectionMode="Multiple" 
@@ -191,6 +192,7 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+            </ScrollView>
            
         </Grid>
 

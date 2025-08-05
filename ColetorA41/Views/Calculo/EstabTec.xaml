@@ -96,18 +96,19 @@
 
         <Border Padding="10" StrokeShape="RoundRectangle 10" BackgroundColor="WhiteSmoke"  HorizontalOptions="Center" WidthRequest="360" Margin="0,0" >
                 
-                <CollectionView x:Name="lista"  
-                                HeightRequest="250"
-                   ItemsSource="{Binding listaTecnico}" 
-                   SelectedItem="{Binding TecnicoSelecionado}"
-                   SelectionMode="Single"
-                   RemainingItemsThreshold="4"
-                   ItemsUpdatingScrollMode="KeepItemsInView"
-                   RemainingItemsThresholdReachedCommand="{Binding CarregarTecnicosEstabelecimentoCommand}"
-                   EmptyView="Técnicos do Estabelecimento"
-                   HorizontalOptions="CenterAndExpand"
-                   
-                   VerticalScrollBarVisibility="Always">
+                <ScrollView VerticalScrollBarVisibility="Always" Orientation="Vertical">
+                    <CollectionView x:Name="lista"  
+                                    HeightRequest="250"
+                       ItemsSource="{Binding listaTecnico}" 
+                       SelectedItem="{Binding TecnicoSelecionado}"
+                       SelectionMode="Single"
+                       RemainingItemsThreshold="4"
+                       ItemsUpdatingScrollMode="KeepItemsInView"
+                       RemainingItemsThresholdReachedCommand="{Binding CarregarTecnicosEstabelecimentoCommand}"
+                       EmptyView="Técnicos do Estabelecimento"
+                       HorizontalOptions="CenterAndExpand"
+                       
+                       VerticalScrollBarVisibility="Always">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:Tecnico">
                             <Border Margin="0,2" Padding="0" StrokeShape="RoundRectangle 10" BackgroundColor="White">
@@ -140,6 +141,7 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+                </ScrollView>
                
             </Border>
         </VerticalStackLayout>

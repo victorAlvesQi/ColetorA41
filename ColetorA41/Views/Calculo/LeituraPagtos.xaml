@@ -104,12 +104,13 @@
 
       
 
-        <CollectionView x:Name="lista" Grid.Row="1" 
-                        ItemsSource="{Binding listaPagtos}" 
-                        SelectionMode="Multiple" 
-                        SelectedItems="{Binding listaPagtosSelecionados}"
-                        SelectionChangedCommand="{Binding ListaPagtosSelecionadaCommand}"
-                        VerticalScrollBarVisibility="Always">
+        <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Always" Orientation="Vertical">
+            <CollectionView x:Name="lista"
+                            ItemsSource="{Binding listaPagtos}" 
+                            SelectionMode="Multiple" 
+                            SelectedItems="{Binding listaPagtosSelecionados}"
+                            SelectionChangedCommand="{Binding ListaPagtosSelecionadaCommand}"
+                            VerticalScrollBarVisibility="Always">
             
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ItemFicha">
@@ -181,6 +182,7 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+        </ScrollView>
 
 
         <Grid ColumnDefinitions="*,*,*" Grid.Row="2" >
