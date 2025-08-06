@@ -1,36 +1,25 @@
-﻿using ColetorA41.Utils;
+using ColetorA41.Utils;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Formats.Asn1;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ColetorA41.Services
 {
-    public class BaseService
+    public class BaseServiceFix
     {
-        /// <summary>
-        /// An instance of <see cref="HttpClient"/>.
-        /// </summary>
         protected readonly IHttpClientFactory _httpClientFactory;
         public HttpClient _httpClient;
         private readonly IConfiguration _config;
-        
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseService"/> class.
-        /// </summary>
-        public BaseService(IHttpClientFactory httpClientFactory, IConfiguration config)
+        public BaseServiceFix(IHttpClientFactory httpClientFactory, IConfiguration config)
         {
             _config = config;
             _httpClientFactory = httpClientFactory;
@@ -38,6 +27,8 @@ namespace ColetorA41.Services
             _httpClient.BaseAddress = new Uri(_config["BASE_URL"] ?? string.Empty);
             _httpClient.DefaultRequestHeaders.Add("x-totvs-server-alias", _config["ALIAS_APPSERVER"]);
             _httpClient.DefaultRequestHeaders.Add("CompanyId", _config["EMPRESA_PADRAO"]);
+            
+            // CORREÇÃO: Timeout finito em vez de infinito
             _httpClient.Timeout = TimeSpan.FromSeconds(30);
         }
 
@@ -96,41 +87,54 @@ namespace ColetorA41.Services
             }
         }
 
-       
-
         protected async Task<TResponse?> PostAsync<TRequest, TResponse>(string metodo, TRequest requestBody = default)
         {
-
             var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(Path.Combine(_config["BASE_URL"] ?? string.Empty, metodo)) };
+            
             if (requestBody != null)
             {
                 var json = JsonConvert.SerializeObject(requestBody);
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
             }
+            
             try
             {
-                var cts = new CancellationTokenSource(new TimeSpan(0, 2, 5));
+                // CORREÇÃO: Timeout mais curto para evitar travamento
+                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(25));
                 var response = await _httpClient.SendAsync(request, cts.Token).ConfigureAwait(false);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine($"HTTP Error: {response.StatusCode} - {response.ReasonPhrase}");
+                    throw new Exception($"Erro HTTP: {response.StatusCode} - {response.ReasonPhrase}");
+                }
 
                 var responseStream = await response.Content.ReadAsStreamAsync();
                 { 
                     StreamReader reader = new StreamReader(responseStream);
                     string text = reader.ReadToEnd();
+                    
+                    if (string.IsNullOrEmpty(text))
+                    {
+                        Debug.WriteLine("Resposta vazia da API");
+                        return default;
+                    }
+                    
                     var data = JsonConvert.DeserializeObject<TResponse>(text);
                     return data;
                 };
-
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.WriteLine("Timeout na requisição POST");
+                throw new Exception("Timeout: A requisição demorou muito para responder.");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Impossível obter dados: {ex.Message}");
-                throw new Exception(ex.Message);
-            }
-            finally
-            {
+                Debug.WriteLine($"Erro na requisição POST: {ex.Message}");
+                throw new Exception($"Erro na comunicação com o servidor: {ex.Message}");
             }
         }
-
 
         public static string StreamToString(Stream stream)
         {
@@ -141,10 +145,6 @@ namespace ColetorA41.Services
             }
         }
 
-        /// <summary>
-        /// Checks if an internet connection is available.
-        /// </summary>
-        /// <returns><c>true</c> if an internet connection is available; otherwise, <c>false</c>.</returns>
         private bool IsInternetAvailable()
         {
             NetworkAccess accessType = Connectivity.NetworkAccess;
@@ -155,11 +155,11 @@ namespace ColetorA41.Services
                 {
                     if (accessType == NetworkAccess.ConstrainedInternet)
                     {
-                        Shell.Current.DisplayAlert("Error!", "Internet access is limited.", "OK");
+                        Shell.Current.DisplayAlert("Erro!", "Acesso à internet limitado.", "OK");
                     }
                     else
                     {
-                        Shell.Current.DisplayAlert("Error!", "No internet access.", "OK");
+                        Shell.Current.DisplayAlert("Erro!", "Sem acesso à internet.", "OK");
                     }
                 }
 
@@ -169,5 +169,4 @@ namespace ColetorA41.Services
             return true;
         }
     }
-}
-
+} 

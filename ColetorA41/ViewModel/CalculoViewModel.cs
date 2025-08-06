@@ -1174,16 +1174,42 @@ namespace ColetorA41.ViewModel
 
         public async Task ObterEstabelecimentos()
         {
-            this.IsBusy = true;
-            var lista = await _service.ObterEstabelecimentos();
-
-            this.listaEstab.Clear();
-            foreach (var item in lista.OrderBy(x => x.identific))
+            try
             {
-                this.listaEstab.Add(item);
-            }
-            this.IsBusy = false;            
+                this.IsBusy = true;
+                
+                // Adicionar timeout para evitar travamento
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                
+                var lista = await _service.ObterEstabelecimentos().WaitAsync(cts.Token);
+                
+                if (lista == null || !lista.Any())
+                {
+                    var erro = new Mensagem("erro", "Erro Carregamento", "Não foi possível carregar os estabelecimentos. Verifique sua conexão de rede.");
+                    await Shell.Current.CurrentPage.ShowPopupAsync(erro);
+                    return;
+                }
 
+                this.listaEstab.Clear();
+                foreach (var item in lista.OrderBy(x => x.identific))
+                {
+                    this.listaEstab.Add(item);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                var erro = new Mensagem("erro", "Timeout de Rede", "A requisição demorou muito. Verifique sua conexão de rede.");
+                await Shell.Current.CurrentPage.ShowPopupAsync(erro);
+            }
+            catch (Exception ex)
+            {
+                var erro = new Mensagem("erro", "Erro de Rede", $"Erro ao carregar estabelecimentos: {ex.Message}");
+                await Shell.Current.CurrentPage.ShowPopupAsync(erro);
+            }
+            finally
+            {
+                this.IsBusy = false;
+            }
         }
 
         public async Task VerificarVersao()
