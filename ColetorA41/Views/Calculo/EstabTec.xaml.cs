@@ -2,6 +2,7 @@ using ColetorA41.ViewModel;
 using CommunityToolkit.Maui.Core.Views;
 using CommunityToolkit.Maui.Views;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics;
 
 namespace ColetorA41.Views.Calculo;
 
@@ -18,12 +19,52 @@ public partial class EstabTec : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _vm.ObterEstabelecimentos();
+        
+        try
+        {
+            Debug.WriteLine("EstabTec: Iniciando carregamento de estabelecimentos");
+            
+            // Verificar se o ViewModel estÃ¡ inicializado
+            if (_vm == null)
+            {
+                Debug.WriteLine("EstabTec: ViewModel Ã© null!");
+                return;
+            }
+
+            // Verificar se a lista estÃ¡ inicializada
+            if (_vm.listaEstab == null)
+            {
+                Debug.WriteLine("EstabTec: listaEstab Ã© null!");
+                return;
+            }
+
+            // Limpar lista antes de carregar
+            _vm.listaEstab.Clear();
+            
+            Debug.WriteLine("EstabTec: Chamando ObterEstabelecimentos");
+            
+            // Carregar estabelecimentos
+            await _vm.ObterEstabelecimentos();
+            
+            Debug.WriteLine($"EstabTec: Carregamento concluÃ­do. Itens: {_vm.listaEstab.Count}");
+            
+            // ForÃ§ar atualizaÃ§Ã£o da UI
+            OnPropertyChanged(nameof(_vm.listaEstab));
+            
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"EstabTec: Erro no carregamento: {ex.Message}");
+            
+            var erro = new Mensagem("erro", "Erro Carregamento", 
+                $"Erro ao carregar estabelecimentos: {ex.Message}");
+            await Shell.Current.CurrentPage.ShowPopupAsync(erro);
+        }
     }
 
     protected override bool OnBackButtonPressed()
     {
-        var mensa = new Mensagem("info", "Navegação", "Utilize a navegação incluída no cálculo");
+        var mensa = new Mensagem("info", "Navegaï¿½ï¿½o", "Utilize a navegaï¿½ï¿½o incluï¿½da no cï¿½lculo");
         Shell.Current.CurrentPage.ShowPopup(mensa);
         return true;
     }

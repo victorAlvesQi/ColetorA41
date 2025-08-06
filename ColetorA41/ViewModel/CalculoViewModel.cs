@@ -1176,39 +1176,61 @@ namespace ColetorA41.ViewModel
         {
             try
             {
+                Debug.WriteLine("CalculoViewModel: Iniciando ObterEstabelecimentos");
+                
                 this.IsBusy = true;
+                
+                // Verificar se o serviço está inicializado
+                if (_service == null)
+                {
+                    Debug.WriteLine("CalculoViewModel: _service é null!");
+                    var erro = new Mensagem("erro", "Erro Inicialização", "Serviço não inicializado.");
+                    await Shell.Current.CurrentPage.ShowPopupAsync(erro);
+                    return;
+                }
                 
                 // Adicionar timeout para evitar travamento
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
                 
+                Debug.WriteLine("CalculoViewModel: Chamando _service.ObterEstabelecimentos()");
                 var lista = await _service.ObterEstabelecimentos().WaitAsync(cts.Token);
+                
+                Debug.WriteLine($"CalculoViewModel: Resposta recebida. Lista é null: {lista == null}");
                 
                 if (lista == null || !lista.Any())
                 {
+                    Debug.WriteLine("CalculoViewModel: Lista vazia ou nula");
                     var erro = new Mensagem("erro", "Erro Carregamento", "Não foi possível carregar os estabelecimentos. Verifique sua conexão de rede.");
                     await Shell.Current.CurrentPage.ShowPopupAsync(erro);
                     return;
                 }
 
+                Debug.WriteLine($"CalculoViewModel: Populando lista com {lista.Count} itens");
+                
                 this.listaEstab.Clear();
                 foreach (var item in lista.OrderBy(x => x.identific))
                 {
                     this.listaEstab.Add(item);
                 }
+                
+                Debug.WriteLine($"CalculoViewModel: Lista populada com {this.listaEstab.Count} itens");
             }
             catch (OperationCanceledException)
             {
+                Debug.WriteLine("CalculoViewModel: Timeout na requisição");
                 var erro = new Mensagem("erro", "Timeout de Rede", "A requisição demorou muito. Verifique sua conexão de rede.");
                 await Shell.Current.CurrentPage.ShowPopupAsync(erro);
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"CalculoViewModel: Erro: {ex.Message}");
                 var erro = new Mensagem("erro", "Erro de Rede", $"Erro ao carregar estabelecimentos: {ex.Message}");
                 await Shell.Current.CurrentPage.ShowPopupAsync(erro);
             }
             finally
             {
                 this.IsBusy = false;
+                Debug.WriteLine("CalculoViewModel: ObterEstabelecimentos concluído");
             }
         }
 
