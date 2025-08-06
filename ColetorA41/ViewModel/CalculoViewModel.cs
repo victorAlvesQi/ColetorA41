@@ -464,9 +464,34 @@ namespace ColetorA41.ViewModel
         [RelayCommand]
         async Task ChamarEstabTec()
         {
-            //await Shell.Current.DisplayAlert("Aqui", "Entrou", "OK");
-          
-            await Shell.Current.GoToAsync($"{nameof(EstabTec)}");
+            try
+            {
+                Debug.WriteLine("CalculoViewModel: Iniciando ChamarEstabTec");
+                
+                // Verificar se Shell.Current está disponível
+                if (Shell.Current == null)
+                {
+                    Debug.WriteLine("CalculoViewModel: Shell.Current é null!");
+                    var erro = new Mensagem("erro", "Erro Navegação", "Shell.Current não está disponível.");
+                    await Application.Current.MainPage.DisplayAlert("Erro", "Shell.Current é null", "OK");
+                    return;
+                }
+                
+                Debug.WriteLine("CalculoViewModel: Shell.Current disponível, tentando navegar para EstabTec");
+                
+                // Tentar navegar para EstabTec
+                await Shell.Current.GoToAsync($"{nameof(EstabTec)}");
+                
+                Debug.WriteLine("CalculoViewModel: Navegação para EstabTec concluída");
+                
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"CalculoViewModel: Erro na navegação para EstabTec: {ex.Message}");
+                
+                var erro = new Mensagem("erro", "Erro Navegação", $"Erro ao navegar para EstabTec: {ex.Message}");
+                await Application.Current.MainPage.DisplayAlert("Erro", $"Erro na navegação: {ex.Message}", "OK");
+            }
         }
         
         [RelayCommand]
@@ -1212,6 +1237,9 @@ namespace ColetorA41.ViewModel
                 {
                     this.listaEstab.Add(item);
                 }
+                
+                // CORREÇÃO: Forçar notificação da propriedade para atualizar a UI
+                OnPropertyChanged(nameof(listaEstab));
                 
                 Debug.WriteLine($"CalculoViewModel: Lista populada com {this.listaEstab.Count} itens");
             }
