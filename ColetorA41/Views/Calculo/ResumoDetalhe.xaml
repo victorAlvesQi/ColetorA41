@@ -89,17 +89,16 @@
         </Border>
 
 
-        <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Always" Orientation="Vertical">
-            <CollectionView x:Name="lista" Margin="0,20" HorizontalOptions="Center" 
+            <CollectionView x:Name="lista"  HorizontalOptions="Center" 
                                       ItemsSource="{Binding listaItensFicha}" 
                                       RemainingItemsThreshold="4"
                                       ItemsUpdatingScrollMode="KeepItemsInView"
                                       RemainingItemsThresholdReachedCommand="{Binding CarregarFichasCommand}"
-                                      VerticalScrollBarVisibility="Always">
+                                      VerticalScrollBarVisibility="Always"  Grid.Row="1" Margin="0,50,0,0">
             <CollectionView.Header>
-                <HorizontalStackLayout HorizontalOptions="Center" Margin="0,10" VerticalOptions="Center" Spacing="5">
+                <HorizontalStackLayout HorizontalOptions="Center" Margin="0,0" VerticalOptions="Center" Spacing="5">
                     <Image  Source="attention.png" HeightRequest="20"  HorizontalOptions="Center"/>
-                    <Label Text="Arraste a ficha para esquerda para detalhes" FontAttributes="Bold" TextColor="{StaticResource dnBlue}"></Label>
+                    <Label Text="Arraste a ficha para esquerda para detalhes (1)" FontAttributes="Bold" TextColor="{StaticResource dnBlue}"></Label>
                 </HorizontalStackLayout>
 
             </CollectionView.Header>
@@ -117,20 +116,21 @@
                             </SwipeItems>
                         </SwipeView.RightItems>
 
-                        <Border HeightRequest="95" Margin="5,3" Padding="0" StrokeShape="RoundRectangle 10" BackgroundColor="White">
+                        <Border HeightRequest="130" Margin="5,3" Padding="0" StrokeShape="RoundRectangle 10" BackgroundColor="White">
 
                             <VerticalStackLayout>
 
-                                <Grid Padding="5" RowDefinitions="*,22,*,*,*" ColumnDefinitions="*,*,*,*,*" ColumnSpacing="5">
+                                <Grid Padding="5" RowDefinitions="*,22,*,*,*" ColumnDefinitions="50,50,*,*,*" ColumnSpacing="5">
                                     <!--Chave-->
-                                    <Label Text="{Binding itCodigo}" Grid.ColumnSpan="2" FontSize="16" FontAttributes="Bold" />
-                                    <Label Text="Localização" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource dnBlue}" Grid.Column="2" Grid.ColumnSpan="3"  HorizontalTextAlignment="End"></Label>
-                                    <Label Text="{Binding codLocaliza}" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" FontSize="14" FontAttributes="Bold" HorizontalTextAlignment="End" Margin="0,-5,0,0"/>
+                                    <Label Text="{Binding seqItem}" FontSize="16" FontAttributes="Bold" Grid.Column="0" Grid.Row="0"/>
+                                    <Label Text="{Binding itCodigo}" Grid.ColumnSpan="2" FontSize="16" FontAttributes="Bold" Grid.Column="1" Grid.Row="0"/>
+                                    <Label Text="Localização" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource dnBlue}" Grid.Column="2" Grid.ColumnSpan="3"  HorizontalTextAlignment="End" Grid.Row="0"></Label>
+                                    <Label Text="{Binding codLocaliza}" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" FontSize="14" FontAttributes="Bold" HorizontalTextAlignment="End" Margin="0,-5,0,0" />
 
                                     <Label Text="{Binding descItem}" Grid.Row="1" Grid.ColumnSpan="3" FontSize="12" LineBreakMode="NoWrap"/>
 
                                     
-                                    <Rectangle HeightRequest="1" Fill="LightGray" HorizontalOptions="FillAndExpand" Grid.Row="2" Grid.ColumnSpan="5"/>
+                                    <Rectangle HeightRequest="1" Fill="LightGray" Grid.Row="2" Grid.ColumnSpan="5"/>
                                     <!--Cabecalho-->
                                     <Label Text="QtPagar"      Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="0"></Label>
                                     <Label Text="QtRenovar"    Style="{StaticResource lblCabec}"  Grid.Row="3" Grid.Column="1"></Label>
@@ -155,7 +155,6 @@
                 </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-            </ScrollView>
             
 
         <Grid ColumnDefinitions="*,*,*" Grid.Row="2" >

@@ -107,6 +107,9 @@ namespace ColetorA41.Models
 
     public class Calculo: INotifyPropertyChanged
     {
+
+        public int seqItem { get; set; }
+
         private bool leituraPagto1 = false;
 
         public bool soEntrada { get; set; }

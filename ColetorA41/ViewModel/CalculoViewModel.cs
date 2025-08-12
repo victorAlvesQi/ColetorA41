@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using ColetorA41.Extensions;
 using ColetorA41.Models;
 using ColetorA41.Services;
@@ -19,6 +20,9 @@ namespace ColetorA41.ViewModel
         private readonly IConfiguration _config;
         private int controle = 0;
 
+        private bool _temMaisPaginas = true;
+        private bool _carregandoPagina = false;
+
         public CalculoViewModel(TotvsService totvsService, 
                                 TotvsService46 totvsService46,
                                 IConfiguration config
@@ -33,6 +37,11 @@ namespace ColetorA41.ViewModel
 
         #region Getter-Setter
         private Estabelecimento _estabSelecionado;
+
+
+        /*
+         * Victor - Ajuste de thread
+         * 
         public Estabelecimento EstabSelecionado
         {
             get =>  _estabSelecionado;
@@ -42,24 +51,76 @@ namespace ColetorA41.ViewModel
                 if (_estabSelecionado != value)
                 {
                     _estabSelecionado = value;
-                    Task.Run(async () =>
-                    {
+                    //Task.Run(async () =>
+                    //{
 
                         IsBusy = false;
                         this.BuscaTecnico = string.Empty;
                         this.CriterioBuscaTecnico = string.Empty;
                         this.listaTecnico.Clear();
-                        await this.CarregarTecnicosEstabelecimento();
-                        await this.ObterTransporte();
-                    });
-                       
+                    //await this.CarregarTecnicosEstabelecimento();
+                    //await this.ObterTransporte();
+                    this.CarregarTecnicosEstabelecimento();
+                    this.ObterTransporte();
+
+                    // });
+
                 }
             }
         }
 
-        
+        */
+
+        public Estabelecimento EstabSelecionado
+        {
+            get => _estabSelecionado;
+            set
+            {
+
+                if (_estabSelecionado != value)
+                {
+                    _estabSelecionado = value;
+                    //Task.Run(async () =>
+                    //{
+
+                    OnPropertyChanged();
+                    _ = OnEstabSelecionadoChangedAsync();
+
+                }
+            }
+        }
+
+        private async Task OnEstabSelecionadoChangedAsync()
+        {
+            IsBusy = true;;
+            this.BuscaTecnico = string.Empty;
+            this.CriterioBuscaTecnico = string.Empty;
+            this.listaTecnico.Clear();
+            await this.CarregarTecnicosEstabelecimento();
+            await this.ObterTransporte();
+            IsBusy = false;
+        }
 
         private Tecnico _tecnicoSelecionado;
+
+        /*
+       * Victor - Ajuste de thread
+       * 
+
+          public Tecnico TecnicoSelecionado
+          {
+              get => _tecnicoSelecionado;
+              set
+              {
+                  if (_tecnicoSelecionado != value)
+                  {
+                      _tecnicoSelecionado = value;
+                      Task.Run(async () => await this.ObterEntrega());
+
+                  }
+              }
+          }
+        */
         public Tecnico TecnicoSelecionado
         {
             get => _tecnicoSelecionado;
@@ -68,476 +129,507 @@ namespace ColetorA41.ViewModel
                 if (_tecnicoSelecionado != value)
                 {
                     _tecnicoSelecionado = value;
-                    Task.Run(async () => await this.ObterEntrega());
+                    OnPropertyChanged();
+
+                    _ = OnTecnicoSelecionadoChangedAsync(_tecnicoSelecionado.codTec);
 
                 }
             }
         }
 
-      
+        public async Task OnTecnicoSelecionadoChangedAsync(int pCodTecnico)
+        {
+            await ObterEntrega(pCodTecnico);
+        }
 
         #endregion
 
         #region Lista Compartilhadas
         public ObservableCollection<Estabelecimento> listaEstab { get; private set; } = new();
-        public ObservableRangeCollection<Tecnico> listaTecnico { get; private set; } = new();
-        public ObservableCollection<Enc> listaEnc { get; private set; } = new();
-        public ObservableCollection<Transporte> listaTranspCompleta { get; private set; } = new();
-        public ObservableCollection<Transporte> listaTransporteEntra { get; private set; } 
-        public ObservableCollection<Transporte> listaTransporteSai { get; private set; } 
-        public ObservableCollection<Entrega> listaEntrega { get; private set; } = new();
-        public ObservableCollection<Extrakit> listaExtrakit { get; private set; } = new();
-        public ObservableCollection<object> listaExtrakitSelecionados { get; set; } = new();
-        public ObservableCollection<object> listaPagtosSelecionados { get; set; } = new();
-        public ObservableCollection<Extrakit> listaExtrakitNaoSelecionados { get; set; } = new();
-        public ObservableCollection<Ficha> listaCalculo { get; private set; } = new();
-        public ObservableCollection<Semsaldo> listaSemSaldo { get; private set; } = new();
-        public ObservableCollection<Models.Resumo> listaResumo { get; private set; } = new ();
-        public ObservableRangeCollection<ItemFicha> listaItensFicha { get; private set; } = new();
-        public ObservableCollection<ItemFicha> listaPagtos { get; private set; }  = new();
-        #endregion
+      public ObservableRangeCollection<Tecnico> listaTecnico { get; private set; } = new();
+      public ObservableCollection<Enc> listaEnc { get; private set; } = new();
+      public ObservableCollection<Transporte> listaTranspCompleta { get; private set; } = new();
+      public ObservableCollection<Transporte> listaTransporteEntra { get; private set; } 
+      public ObservableCollection<Transporte> listaTransporteSai { get; private set; } 
+      public ObservableCollection<Entrega> listaEntrega { get; private set; } = new();
+      public ObservableCollection<Extrakit> listaExtrakit { get; private set; } = new();
+      public ObservableCollection<object> listaExtrakitSelecionados { get; set; } = new();
+      public ObservableCollection<object> listaPagtosSelecionados { get; set; } = new();
+      public ObservableCollection<Extrakit> listaExtrakitNaoSelecionados { get; set; } = new();
+      public ObservableCollection<Ficha> listaCalculo { get; private set; } = new();
+      public ObservableCollection<Semsaldo> listaSemSaldo { get; private set; } = new();
+      public ObservableCollection<Models.Resumo> listaResumo { get; private set; } = new ();
+      public ObservableRangeCollection<ItemFicha> listaItensFicha { get; private set; } = new();
+      public ObservableCollection<ItemFicha> listaPagtos { get; private set; }  = new();
+      #endregion
 
-        #region Listas Locais
-        #endregion
+      #region Listas Locais
+      #endregion
 
-        #region Variaveis Compartilhadas
+      #region Variaveis Compartilhadas
 
-        [ObservableProperty]
-        string labelErro = "";
+      [ObservableProperty]
+      string labelErro = "";
 
-        [ObservableProperty]
-        int qtdePendentesPagto = 0;
+      [ObservableProperty]
+      int qtdePendentesPagto = 0;
 
-        [ObservableProperty]
-        int qtdeTotalPagto = 0;
+      [ObservableProperty]
+      int qtdeTotalPagto = 0;
 
-        [ObservableProperty]
-        int nrProcessSelecionado;
+      [ObservableProperty]
+      int nrProcessSelecionado;
 
-        [ObservableProperty]
-        string etiquetaEnc;
+      [ObservableProperty]
+      string etiquetaEnc;
 
-        //Dados da Nota
-        [ObservableProperty]
-        string serieEntra;
+      //Dados da Nota
+      [ObservableProperty]
+      string serieEntra;
 
-        [ObservableProperty]
-        string serieSaida;
+      [ObservableProperty]
+      string serieSaida;
 
-        [ObservableProperty]
-        string rpw;
+      [ObservableProperty]
+      string rpw;
 
-        [ObservableProperty]
-        string entrega;
+      [ObservableProperty]
+      string entrega;
 
-        [ObservableProperty]
-        int qtdeETSelecionadas;
+      [ObservableProperty]
+      int qtdeETSelecionadas;
 
-        [ObservableProperty]
-        int qtdeETNaoSelecionadas;
+      [ObservableProperty]
+      int qtdeETNaoSelecionadas;
 
-        [ObservableProperty]
-        Transporte transpEntraSelecionado;
+      [ObservableProperty]
+      Transporte transpEntraSelecionado;
 
-        [ObservableProperty]
-        ParamEstabel parametroSelecionado;
+      [ObservableProperty]
+      ParamEstabel parametroSelecionado;
 
-        [ObservableProperty]
-        Transporte transpSaidaSelecionado;
+      [ObservableProperty]
+      Transporte transpSaidaSelecionado;
 
-        [ObservableProperty]
-        Entrega entregaSelecionada;
+      [ObservableProperty]
+      Entrega entregaSelecionada;
 
-        [ObservableProperty]
-        ItemFicha itemFichaSelecionada;
+      [ObservableProperty]
+      ItemFicha itemFichaSelecionada;
 
-        [ObservableProperty]
-        string tipoFichaSelecionado;
+      [ObservableProperty]
+      string tipoFichaSelecionado;
 
-        [ObservableProperty]
-        int usuarioAlmoxa_;
+      [ObservableProperty]
+      int usuarioAlmoxa_;
 
-        [ObservableProperty]
-        string senhaAlmoxa;
+      [ObservableProperty]
+      string senhaAlmoxa;
 
-        [ObservableProperty]
-        int tipoCalculo;
+      [ObservableProperty]
+      int tipoCalculo;
 
-        [ObservableProperty]
-        string numEnc;
+      [ObservableProperty]
+      string numEnc;
 
-        [ObservableProperty]
-        string itemPagto;
+      [ObservableProperty]
+      string itemPagto;
 
-        [ObservableProperty]
-        string lblAprovar;
+      [ObservableProperty]
+      string lblAprovar;
 
-        [ObservableProperty]
-        string lblAprovarSemEntrada;
+      [ObservableProperty]
+      string lblAprovarSemEntrada;
 
-        [ObservableProperty]
-        string rowIdOS = "";
+      [ObservableProperty]
+      string rowIdOS = "";
 
-        [ObservableProperty]
-        string labelLoading;
+      [ObservableProperty]
+      string labelLoading;
 
-        //Login Almoxarifado
-        [ObservableProperty]
-        LabelResumo fichas = new();
-
-        [ObservableProperty]
-        string criterioBuscaTecnico;
-
-        [ObservableProperty]
-        string criterioBuscaItemFicha = "";
-
-        [ObservableProperty]
-        bool isTotal = false;
-
-        [ObservableProperty]
-        bool isBtnAprovar = true;
-
-        [ObservableProperty]
-        bool isBtnAprovarSS = true;
-
-        [ObservableProperty]
-        bool isParcial = true;
-
-        [ObservableProperty]
-        bool isET = false;
-
-        [ObservableProperty]
-        int iRadio=1;
-
-        #endregion
-
-        #region Variaveis Locais
-
-
-        #endregion
-
-        #region Funcoes Compartilhadas
-
-
-        private string buscaTransporteEntra;
-        public string? BuscaTransporteEntra
-        {
-            get
-            {
-                return buscaTransporteEntra;
-            }
-            set
-            {
-                if (buscaTransporteEntra == value) return;
-
-                buscaTransporteEntra = value;
-
-                if (buscaTransporteEntra == string.Empty )
-                {
-                    BuscarTranspEntra(string.Empty);
-                }
-            }
-        }
-
-        private string buscaTransporteSai;
-        public string? BuscaTransporteSai
-        {
-            get
-            {
-                return buscaTransporteSai;
-            }
-            set
-            {
-                if (buscaTransporteSai == value) return;
-                buscaTransporteSai = value;
-                if (buscaTransporteSai == string.Empty)
-                {
-                     BuscarTranspSai(string.Empty);
-                   
-                }
-            }
-        }
-
-
-        [RelayCommand]
-        async Task BuscarTranspEntra(string criterio)
-        {
-            IsBusy = true;
-            this.listaTransporteEntra.Clear();
-            if (string.IsNullOrEmpty(criterio))
-            {
-                foreach (var item in this.listaTranspCompleta)
-                {
-                    this.listaTransporteEntra.Add(item);
-                }
-            }
-            else
-            {
-                //Localizar registros
-                var listaEncontrada = this.listaTranspCompleta.Where(x => x.identific.ToUpper().Contains(criterio.ToUpper()));
-
-                //Caso existe apenas 1 setar 
-                this.TranspEntraSelecionado = null;
-
-                //Popular Lista
-                foreach (var item in listaEncontrada)
-                {
-                    this.listaTransporteEntra.Add(item);
-                }
-
-                if (listaEncontrada.Count() == 1)
-                {
-                    this.TranspEntraSelecionado = listaEncontrada.First();
-                }
-
-            }
-            IsBusy = false;
-        }
-
-        [RelayCommand]
-        async Task BuscarTranspSai(string criterio)
-        {
-            IsBusy = true;
-            this.listaTransporteSai.Clear();
-            if (string.IsNullOrEmpty(criterio))
-            {
-                foreach (var item in this.listaTranspCompleta)
-                {
-                    this.listaTransporteSai.Add(item);
-                }
-            }
-            else
-            {
-                //Localizar registros
-                var listaEncontrada = this.listaTranspCompleta.Where(x => x.identific.ToUpper().Contains(criterio.ToUpper()));
-
-                //Caso existe apenas 1 setar 
-                this.TranspSaidaSelecionado = null;
-
-                //Popular Lista
-                foreach (var item in listaEncontrada)
-                {
-                    this.listaTransporteSai.Add(item);
-                }
-
-                if (listaEncontrada.Count() == 1)
-                {
-                    this.TranspSaidaSelecionado = listaEncontrada.First();
-                }
-
-            }
-            IsBusy = false;
-        }
-
-        [RelayCommand]
-        void DownloadVersao()
-        {
-            var obj = _service.DownloadVersao();
-            //Pendencia:
-            //Transformar obj em Stream e depois gerar um arquivo
-            //Obter permissao Android para geracao arquivo
-
-        }
-        [RelayCommand]
-        void DetalheFicha(object obj)
-        {
-
-        }
-
-        //Extrakit
-        [RelayCommand]
-        void SelecionarTodosExtrakit()
-        {
-            this.listaExtrakitSelecionados.Clear();
-
-            foreach (var item in this.listaExtrakit)
-            {
-                this.listaExtrakitSelecionados.Add(item);
-            }
-        }
-
-        [RelayCommand]
-        void SelecionarNenhumExtrakit()
-        {
-            this.listaExtrakitSelecionados.Clear();
-        }
-
-        [RelayCommand]
-        async Task BuscarTecnico(string criterio)
-        {
-            await Task.Run(async ()=> {
-                IsBusy = true;
-                CriterioBuscaTecnico = criterio;
-                await ObterTecnicosEstab();
-                IsBusy = false;
-                });
-
-        }
-
-        [RelayCommand]
-        async Task BuscarItemFicha(string criterio)
-        {
-            await Task.Run(async () => {
-                IsBusy = true;
-                CriterioBuscaItemFicha = criterio;
-                await CarregarFichas();
-                IsBusy = false;
-            });
-
-        }
-
-        [RelayCommand]
-        public async void ListaETSelecionada()
-        {
-            this.listaExtrakitNaoSelecionados.Clear();
-            foreach(var item in this.listaExtrakit)
-            {
-                if (this.listaExtrakitSelecionados.OfType<Extrakit>().Where(x=>x.cRowId==item.cRowId).FirstOrDefault() == null)
-                {
-                    this.listaExtrakitNaoSelecionados.Add(item);
-                }
-            }
-            QtdeETSelecionadas = listaExtrakitSelecionados.OfType<Extrakit>().Sum(s => s.qtSaldo);
-            QtdeETNaoSelecionadas = listaExtrakitNaoSelecionados.Sum(s => s.qtSaldo);
-        }
-
-        [RelayCommand]
-        public async void ListaPagtosSelecionada()
-        {
-            foreach (var item in listaPagtos)
-            {
-
-                var encontrado = this.listaPagtosSelecionados.OfType<ItemFicha>().Where(x => x.id == item.id && x.leituraPagto == false).FirstOrDefault();
-                if(encontrado != null)
-                   encontrado.leituraPagto = true;
-            }
-
-            this.QtdePendentesPagto = this.listaPagtos.Where(item => item.leituraPagto).Count();
-
-        }
-
-        [RelayCommand]
-        public async Task LoginAlmoxa()
-        {
-            try
-            {
-                this.IsBusy = true;
-                var ok = await _service.LoginAlmoxa(this.NrProcessSelecionado,
-                                                    this.EstabSelecionado.codEstab,
-                                                    this.UsuarioAlmoxa_,
-                                                    this.SenhaAlmoxa);
-                if (ok.senhaValida)
-                {
-                    //await ChamarResumo();
-                    await ChamarLoadingCalculo();
-                }
-                else
-                {
-                    this.IsBusy = false;
-                    var erro = new Mensagem("erro", "Erro Login", ok.mensagem);
-                    await Shell.Current.CurrentPage.ShowPopupAsync(erro);
-                    return;
-
-                }
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-           
-
-        }
-
-        [RelayCommand]
-        private void SelectionChanged()
-        {
-            foreach (var p in listaExtrakitSelecionados)
-            {
-                if (p is Extrakit person)
-                {
-                    Console.WriteLine($"{person.itCodigo} is selected");
-                }
-            }
-        }
-
-        [RelayCommand]
-        async Task ChamarEstabTec()
-        {
-            try
-            {
-                Debug.WriteLine("CalculoViewModel: Iniciando ChamarEstabTec");
-                
-                // Verificar se Shell.Current está disponível
-                if (Shell.Current == null)
-                {
-                    Debug.WriteLine("CalculoViewModel: Shell.Current é null!");
-                    var erro = new Mensagem("erro", "Erro Navegação", "Shell.Current não está disponível.");
-                    await Application.Current.MainPage.DisplayAlert("Erro", "Shell.Current é null", "OK");
-                    return;
-                }
-                
-                Debug.WriteLine("CalculoViewModel: Shell.Current disponível, tentando navegar para EstabTec");
-                
-                // Tentar navegar para EstabTec
-                await Shell.Current.GoToAsync($"{nameof(EstabTec)}");
-                
-                Debug.WriteLine("CalculoViewModel: Navegação para EstabTec concluída");
-                
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"CalculoViewModel: Erro na navegação para EstabTec: {ex.Message}");
-                
-                var erro = new Mensagem("erro", "Erro Navegação", $"Erro ao navegar para EstabTec: {ex.Message}");
-                await Application.Current.MainPage.DisplayAlert("Erro", $"Erro na navegação: {ex.Message}", "OK");
-            }
-        }
-        
-        [RelayCommand]
-        async Task ChamarResumoDetalhe(string tipoFicha)
-        {
-            if (tipoFichaSelecionado != tipoFicha)
-            {
-                //listaItensFicha.Clear();
-                tipoFichaSelecionado = tipoFicha;
-
-            }
-            listaItensFicha.Clear();
-            await this.CarregarFichas();
-            await Shell.Current.GoToAsync($"{nameof(ResumoDetalhe)}");
-        }
-
-        //FAS
-        [RelayCommand]
-        async Task ChamarResumoDetalheEntrada(string tipoFicha)
-        {
-            if (tipoFichaSelecionado != tipoFicha)
-            {
-                //listaItensFicha.Clear();
-                tipoFichaSelecionado = tipoFicha;
-
-            }
-            //v01 listaItensFicha.Clear();
-            await this.CarregarFichas();
-            await Shell.Current.GoToAsync($"{nameof(ResumoDetalheEntrada)}"); //FAS
-        }
-
-        /*junim
-        [RelayCommand]
-        async Task ChamarResumoDetalhe(string tipoFicha)
-        {
-            if (tipoFichaSelecionado != tipoFicha)
-            {
-                listaItensFicha.Clear();
-                tipoFichaSelecionado = tipoFicha;
-
-            }
-            listaItensFicha.Clear();
-            await this.CarregarFichas();
-            await Shell.Current.GoToAsync($"{nameof(ResumoDetalhe)}");
-        }
-        */
+      //Login Almoxarifado
+      [ObservableProperty]
+      LabelResumo fichas = new();
+
+      [ObservableProperty]
+      string criterioBuscaTecnico;
+
+      [ObservableProperty]
+      string criterioBuscaItemFicha = "";
+
+      [ObservableProperty]
+      bool isTotal = false;
+
+      [ObservableProperty]
+      bool isBtnAprovar = true;
+
+      [ObservableProperty]
+      bool isBtnAprovarSS = true;
+
+      [ObservableProperty]
+      bool isParcial = true;
+
+      [ObservableProperty]
+      bool isET = false;
+
+      [ObservableProperty]
+      int iRadio=1;
+
+      #endregion
+
+      #region Variaveis Locais
+
+
+      #endregion
+
+      #region Funcoes Compartilhadas
+
+
+      private string buscaTransporteEntra;
+      public string? BuscaTransporteEntra
+      {
+          get
+          {
+              return buscaTransporteEntra;
+          }
+          set
+          {
+              if (buscaTransporteEntra == value) return;
+
+              buscaTransporteEntra = value;
+
+              if (buscaTransporteEntra == string.Empty )
+              {
+                  BuscarTranspEntra(string.Empty);
+              }
+          }
+      }
+
+      private string buscaTransporteSai;
+      public string? BuscaTransporteSai
+      {
+          get
+          {
+              return buscaTransporteSai;
+          }
+          set
+          {
+              if (buscaTransporteSai == value) return;
+              buscaTransporteSai = value;
+              if (buscaTransporteSai == string.Empty)
+              {
+                   BuscarTranspSai(string.Empty);
+
+              }
+          }
+      }
+
+
+      [RelayCommand]
+      async Task BuscarTranspEntra(string criterio)
+      {
+          IsBusy = true;
+          this.listaTransporteEntra.Clear();
+          if (string.IsNullOrEmpty(criterio))
+          {
+              foreach (var item in this.listaTranspCompleta)
+              {
+                  this.listaTransporteEntra.Add(item);
+              }
+          }
+          else
+          {
+              //Localizar registros
+              var listaEncontrada = this.listaTranspCompleta.Where(x => x.identific.ToUpper().Contains(criterio.ToUpper()));
+
+              //Caso existe apenas 1 setar 
+              this.TranspEntraSelecionado = null;
+
+              //Popular Lista
+              foreach (var item in listaEncontrada)
+              {
+                  this.listaTransporteEntra.Add(item);
+              }
+
+              if (listaEncontrada.Count() == 1)
+              {
+                  this.TranspEntraSelecionado = listaEncontrada.First();
+              }
+
+          }
+          IsBusy = false;
+      }
+
+      [RelayCommand]
+      async Task BuscarTranspSai(string criterio)
+      {
+          IsBusy = true;
+          this.listaTransporteSai.Clear();
+          if (string.IsNullOrEmpty(criterio))
+          {
+              foreach (var item in this.listaTranspCompleta)
+              {
+                  this.listaTransporteSai.Add(item);
+              }
+          }
+          else
+          {
+              //Localizar registros
+              var listaEncontrada = this.listaTranspCompleta.Where(x => x.identific.ToUpper().Contains(criterio.ToUpper()));
+
+              //Caso existe apenas 1 setar 
+              this.TranspSaidaSelecionado = null;
+
+              //Popular Lista
+              foreach (var item in listaEncontrada)
+              {
+                  this.listaTransporteSai.Add(item);
+              }
+
+              if (listaEncontrada.Count() == 1)
+              {
+                  this.TranspSaidaSelecionado = listaEncontrada.First();
+              }
+
+          }
+          IsBusy = false;
+      }
+
+      [RelayCommand]
+      void DownloadVersao()
+      {
+          var obj = _service.DownloadVersao();
+          //Pendencia:
+          //Transformar obj em Stream e depois gerar um arquivo
+          //Obter permissao Android para geracao arquivo
+
+      }
+      [RelayCommand]
+      void DetalheFicha(object obj)
+      {
+
+      }
+
+      //Extrakit
+      [RelayCommand]
+      void SelecionarTodosExtrakit()
+      {
+          this.listaExtrakitSelecionados.Clear();
+
+          foreach (var item in this.listaExtrakit)
+          {
+              this.listaExtrakitSelecionados.Add(item);
+          }
+      }
+
+      [RelayCommand]
+      void SelecionarNenhumExtrakit()
+      {
+          this.listaExtrakitSelecionados.Clear();
+      }
+
+      [RelayCommand]
+      async Task BuscarTecnico(string criterio)
+      {
+          // await Task.Run(async ()=> {
+              IsBusy = true;
+              CriterioBuscaTecnico = criterio;
+              await ObterTecnicosEstab();
+              IsBusy = false;
+          //    });
+
+      }
+
+      [RelayCommand]
+      async Task BuscarItemFicha(string criterio)
+      {
+          // Victor alves - COmentado p/ erro de busca nas fichas e lentidão
+          //await Task.Run(async () => {
+
+          IsBusy = true;
+
+          CriterioBuscaItemFicha = criterio;
+
+          // Victor Alves - add revisao de congelar tela
+          listaItensFicha.Clear();
+
+          _temMaisPaginas = true;
+          // Fim - Victor Alves - add revisao de congelar tela
+
+          await CarregarFichas();
+
+          IsBusy = false;
+          //});
+
+
+      }
+
+      [RelayCommand]
+      public async void ListaETSelecionada()
+      {
+          this.listaExtrakitNaoSelecionados.Clear();
+          foreach(var item in this.listaExtrakit)
+          {
+              if (this.listaExtrakitSelecionados.OfType<Extrakit>().Where(x=>x.cRowId==item.cRowId).FirstOrDefault() == null)
+              {
+                  this.listaExtrakitNaoSelecionados.Add(item);
+              }
+          }
+          QtdeETSelecionadas = listaExtrakitSelecionados.OfType<Extrakit>().Sum(s => s.qtSaldo);
+          QtdeETNaoSelecionadas = listaExtrakitNaoSelecionados.Sum(s => s.qtSaldo);
+      }
+
+      [RelayCommand]
+      public async void ListaPagtosSelecionada()
+      {
+          foreach (var item in listaPagtos)
+          {
+
+              var encontrado = this.listaPagtosSelecionados.OfType<ItemFicha>().Where(x => x.id == item.id && x.leituraPagto == false).FirstOrDefault();
+              if(encontrado != null)
+                 encontrado.leituraPagto = true;
+          }
+
+          this.QtdePendentesPagto = this.listaPagtos.Where(item => item.leituraPagto).Count();
+
+      }
+
+      [RelayCommand]
+      public async Task LoginAlmoxa()
+      {
+          try
+          {
+              this.IsBusy = true;
+              var ok = await _service.LoginAlmoxa(this.NrProcessSelecionado,
+                                                  this.EstabSelecionado.codEstab,
+                                                  this.UsuarioAlmoxa_,
+                                                  this.SenhaAlmoxa);
+              if (ok.senhaValida)
+              {
+                  //await ChamarResumo();
+                  await ChamarLoadingCalculo();
+              }
+              else
+              {
+                  this.IsBusy = false;
+                  var erro = new Mensagem("erro", "Erro Login", ok.mensagem);
+                  await Shell.Current.CurrentPage.ShowPopupAsync(erro);
+                  return;
+
+              }
+          }
+          catch (Exception ex)
+          {
+
+              throw;
+          }
+
+
+      }
+
+      [RelayCommand]
+      private void SelectionChanged()
+      {
+          foreach (var p in listaExtrakitSelecionados)
+          {
+              if (p is Extrakit person)
+              {
+                  Console.WriteLine($"{person.itCodigo} is selected");
+              }
+          }
+      }
+
+      [RelayCommand]
+      async Task ChamarEstabTec()
+      {
+          try
+          {
+              Debug.WriteLine("CalculoViewModel: Iniciando ChamarEstabTec");
+
+              // Verificar se Shell.Current está disponível
+              if (Shell.Current == null)
+              {
+                  Debug.WriteLine("CalculoViewModel: Shell.Current é null!");
+                  var erro = new Mensagem("erro", "Erro Navegação", "Shell.Current não está disponível.");
+                  await Application.Current.MainPage.DisplayAlert("Erro", "Shell.Current é null", "OK");
+                  return;
+              }
+
+              Debug.WriteLine("CalculoViewModel: Shell.Current disponível, tentando navegar para EstabTec");
+
+              // Tentar navegar para EstabTec
+              await Shell.Current.GoToAsync($"{nameof(EstabTec)}");
+
+              Debug.WriteLine("CalculoViewModel: Navegação para EstabTec concluída");
+
+          }
+          catch (Exception ex)
+          {
+              Debug.WriteLine($"CalculoViewModel: Erro na navegação para EstabTec: {ex.Message}");
+
+              var erro = new Mensagem("erro", "Erro Navegação", $"Erro ao navegar para EstabTec: {ex.Message}");
+              await Application.Current.MainPage.DisplayAlert("Erro", $"Erro na navegação: {ex.Message}", "OK");
+          }
+      }
+
+      [RelayCommand]
+      async Task ChamarResumoDetalhe(string tipoFicha)
+      {
+          if (tipoFichaSelecionado != tipoFicha)
+          {
+              //listaItensFicha.Clear();
+              tipoFichaSelecionado = tipoFicha;
+
+          }
+
+
+          // Victor Alves - add revisao de congelar tela
+          listaItensFicha.Clear();
+
+          _temMaisPaginas = true;
+          // Fim - Victor Alves - add revisao de congelar tela
+
+          await this.CarregarFichas();
+          await Shell.Current.GoToAsync($"{nameof(ResumoDetalhe)}");
+      }
+
+      //FAS
+      [RelayCommand]
+      async Task ChamarResumoDetalheEntrada(string tipoFicha)
+      {
+          if (tipoFichaSelecionado != tipoFicha)
+          {
+              //listaItensFicha.Clear();
+              tipoFichaSelecionado = tipoFicha;
+
+          }
+
+          // Victor Alves - add revisao de congelar tela
+          listaItensFicha.Clear();
+
+          _temMaisPaginas = true;
+          // Fim - Victor Alves - add revisao de congelar tela
+
+          //v01 listaItensFicha.Clear();
+          await this.CarregarFichas();
+          await Shell.Current.GoToAsync($"{nameof(ResumoDetalheEntrada)}"); //FAS
+      }
+
+      /*junim
+      [RelayCommand]
+      async Task ChamarResumoDetalhe(string tipoFicha)
+      {
+          if (tipoFichaSelecionado != tipoFicha)
+          {
+              listaItensFicha.Clear();
+              tipoFichaSelecionado = tipoFicha;
+
+          }
+          listaItensFicha.Clear();
+          await this.CarregarFichas();
+          await Shell.Current.GoToAsync($"{nameof(ResumoDetalhe)}");
+      }
+      */
         [RelayCommand]
         async Task ChamarResumoDetalhePagto(string tipoFicha)
         {
@@ -547,6 +639,7 @@ namespace ColetorA41.ViewModel
                 tipoFichaSelecionado = tipoFicha;
 
             }
+
             await this.CarregarFichasPagto();
             await Shell.Current.GoToAsync($"{nameof(ResumoDetalhePago)}");
         }
@@ -554,17 +647,28 @@ namespace ColetorA41.ViewModel
         [RelayCommand]
         async Task CarregarFichas()
         {
+            if (!_temMaisPaginas || _carregandoPagina) return;
+            
+            _carregandoPagina = true;
+
+            Debug.WriteLine("Carregando ficha " + Environment.StackTrace);
+            
+            IsBusy = true;
 
             //this.listaItensFicha.Clear();
             //Adicionar Extrakit fora do processo na selecao do Geral
             if (this.TipoFichaSelecionado == "Geral" && this.listaItensFicha.Count <= 0)
             {
                 this.controle = 0; //FAS
+                int count = 0;
 
                 foreach (var item in this.listaExtrakitNaoSelecionados)
                 {
+                    count++;
+
                     listaItensFicha.Add(new ItemFicha
                     {
+                        seqItem = count,
                         itCodigo = item.itCodigo,
                         itPrincipal = item.itCodigo,
                         tipo = item.tipo,
@@ -600,18 +704,44 @@ namespace ColetorA41.ViewModel
                 }
             }
             // if (IsBusy) return;
-            IsBusy = true;
+            
+          //  IsBusy = true;
 
             var lista = await _service.ObterItensCalculoMobile(TipoCalculo,
-                                                               TipoFichaSelecionado, 
-                                                               NrProcessSelecionado, 
-                                                               listaItensFicha.Count() - this.controle, 
-                                                               20, 
-                                                               BuscaItemFicha);
+                                                                TipoFichaSelecionado, 
+                                                                NrProcessSelecionado, 
+                                                                listaItensFicha.Count() - this.controle, 
+                                                                20, 
+                                                                BuscaItemFicha);
 
-            listaItensFicha.AddRange(lista.items);
+            // Adicionar Victor Teste
+            if (lista != null && lista.items != null) { 
+                int iCont = 0;
+                foreach(var row in lista.items)
+                {
+                    iCont++;
+                    row.seqItem = iCont;
+                }
+            }
+
+            if (lista?.items != null && lista.items.Any())
+            {
+                listaItensFicha.AddRange(lista.items);
+
+
+                if (lista.items.Count < 20)
+                {
+                    _temMaisPaginas = false;
+                }
+            }
+            else
+            {
+                _temMaisPaginas = false;
+            }
+
 
             IsBusy = false;
+            _carregandoPagina = false;
         }
 
         async Task CarregarFichasPagto()
@@ -1176,6 +1306,8 @@ namespace ColetorA41.ViewModel
         }
 
         private string buscaTecnico;
+
+        /* Victor Alvs - ajuste async
         public string? BuscaTecnico
         {
             get
@@ -1193,6 +1325,26 @@ namespace ColetorA41.ViewModel
                 if (buscaTecnico == string.Empty)
                 {
                     Task.Run(async () => { await BuscarTecnico(""); });
+                }
+            }
+        }
+
+        */
+
+        public string? BuscaTecnico
+        {
+            get
+            {
+                return buscaTecnico;
+            }
+            set
+            {
+                if (SetProperty(ref buscaTecnico, value))
+                {
+                    if (String.IsNullOrEmpty(buscaTecnico))
+                    {
+                        _ = BuscarTecnico("");
+                    }
                 }
             }
         }
@@ -1283,6 +1435,16 @@ namespace ColetorA41.ViewModel
                     this.listaTecnico.AddRange(lista);
 
                 }
+
+               //// Victor Alves - Melhoria de performance ao clicar no tecnico
+               //if (this.listaTecnico != null && this.listaTecnico.Any())
+               //{
+               //    foreach (var row in this.listaTecnico)
+               //    {
+               //        await ObterEntrega(row.codTec);
+               //    }
+               //}
+
                 this.IsBusy = false;
             }
             catch (Exception ex)
@@ -1310,10 +1472,12 @@ namespace ColetorA41.ViewModel
             listaTransporteEntra = new(this.listaTranspCompleta);
             listaTransporteSai = new(this.listaTranspCompleta);
         }
-        public async Task ObterEntrega()
+        public async Task ObterEntrega(int pCodTec)
         {
             this.IsBusy = true;
-            var lista = await _service.ObterEntrega(this.TecnicoSelecionado.codTec, this.EstabSelecionado.codEstab);
+            //var lista = await _service.ObterEntrega(this.TecnicoSelecionado.codTec, this.EstabSelecionado.codEstab);
+
+            var lista = await _service.ObterEntrega(pCodTec, this.EstabSelecionado.codEstab);
 
             this.listaEntrega.Clear();
             foreach (var item in lista.OrderBy(x => x.identific))
@@ -1321,8 +1485,6 @@ namespace ColetorA41.ViewModel
                 this.listaEntrega.Add(item);
             }
             this.IsBusy = false;
-
-            
         }
         public async Task ObterParametrosEstab()
         {

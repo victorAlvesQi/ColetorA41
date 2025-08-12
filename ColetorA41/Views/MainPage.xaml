@@ -39,7 +39,7 @@
                 HorizontalOptions="Center" />
 
             <Label
-                Text="ColetorA41 v 1.1.03 (d)"
+                Text="ColetorA41 v 1.1.04 (d)"
                 SemanticProperties.HeadingLevel="Level2"
                 SemanticProperties.Description="ColetorA41"
                 FontSize="18"

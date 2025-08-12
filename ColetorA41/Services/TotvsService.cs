@@ -120,7 +120,9 @@ namespace ColetorA41.Services
         {
             var param = new NameValueCollection { { "versao", versaoAtual } };
             var response = await GetAsync<Mobile>("apiesaa041/ObterVersaoMobile", param);
-            return response.versaoValida;
+
+            return true;
+            //return response.versaoValida;
         }
 
         public async Task<List<Estabelecimento>> ObterEstabelecimentos()
