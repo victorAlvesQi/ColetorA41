@@ -92,13 +92,22 @@ namespace ColetorA41.ViewModel
 
         private async Task OnEstabSelecionadoChangedAsync()
         {
-            IsBusy = true;;
-            this.BuscaTecnico = string.Empty;
-            this.CriterioBuscaTecnico = string.Empty;
-            this.listaTecnico.Clear();
-            await this.CarregarTecnicosEstabelecimento();
-            await this.ObterTransporte();
-            IsBusy = false;
+            try
+            {
+                IsBusy = true; ;
+                this.BuscaTecnico = string.Empty;
+                this.CriterioBuscaTecnico = string.Empty;
+
+                ResetarPaginacaoTecnicos();
+
+                await this.CarregarTecnicosEstabelecimento();
+
+                await this.ObterTransporte();
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         private Tecnico _tecnicoSelecionado;
@@ -431,13 +440,12 @@ namespace ColetorA41.ViewModel
       [RelayCommand]
       async Task BuscarTecnico(string criterio)
       {
-          // await Task.Run(async ()=> {
+           await Task.Run(async ()=> {
               IsBusy = true;
               CriterioBuscaTecnico = criterio;
               await ObterTecnicosEstab();
               IsBusy = false;
-          //    });
-
+              });
       }
 
       [RelayCommand]
@@ -750,36 +758,60 @@ namespace ColetorA41.ViewModel
            
         }
 
+        private bool _temMaisTecnicos = true;
+
+        private void ResetarPaginacaoTecnicos()
+        {
+            _temMaisTecnicos = true;
+            listaTecnico.Clear();
+        }
+
         [RelayCommand]
         async Task CarregarTecnicosEstabelecimento()
         {
-            if (IsBusy) return;
-            IsBusy = true;
-
-            if (_estabSelecionado == null)
-            {
-                IsBusy = false;
+            if (IsBusy || !_temMaisTecnicos) 
                 return;
-            }
-
+         
             // var lista = await _service.ObterItensCalculoMobile(TipoCalculo, tipoFichaSelecionado, NrProcessSelecionado, listaItensFicha.Count(), 20);
             try
             {
+                IsBusy = true;
+
+                if (_estabSelecionado == null)
+                {
+                    IsBusy = false;
+                    return;
+                }
+                
+                // Erro aqui na busca
                 var lista = await _service.ObterTecEstabMobile(this._estabSelecionado.codEstab, CriterioBuscaTecnico ,listaTecnico.Count(), 20);
-                if (lista != null)
+
+
+                if (lista != null && lista.Any())
+                {
                     listaTecnico.AddRange(lista);
-                IsBusy = false;
+
+                    if (lista.Count < 20)
+                    {
+                        _temMaisTecnicos = false;
+                    }
+                }
+                else
+                {
+                    _temMaisTecnicos = false;
+                }
+
 
             }
             catch (Exception ex)
             {
-
-                IsBusy = false;
                 var msg = new Mensagem("erro", "Erro", ex.Message);
                 await Shell.Current.ShowPopupAsync(msg);
-               
-            }            
-
+            }
+            finally
+            {
+              //  IsBusy = false;
+            }
         }
 
         [RelayCommand]
@@ -1392,7 +1424,16 @@ namespace ColetorA41.ViewModel
                 
                 // CORREÇÃO: Forçar notificação da propriedade para atualizar a UI
                 OnPropertyChanged(nameof(listaEstab));
-                
+
+
+                // Victor Alves - direciona tela Estab
+                /* 
+                if (this._estabSelecionado == null)
+                {
+                    ChamarEstabTec();
+                }
+                */
+
                 Debug.WriteLine($"CalculoViewModel: Lista populada com {this.listaEstab.Count} itens");
             }
             catch (OperationCanceledException)
@@ -1423,55 +1464,62 @@ namespace ColetorA41.ViewModel
 
         public async Task ObterTecnicosEstab()
         {
-            if (this._estabSelecionado == null) return;
+            if (this._estabSelecionado == null) 
+                return;
 
-            this.IsBusy = true;
             try
             {
+                this.IsBusy = true;
+
                 var lista = await _service.ObterTecEstabMobile(this._estabSelecionado.codEstab, CriterioBuscaTecnico, 0, 20);
                 if (lista != null)
                 {
                     this.listaTecnico.Clear();
                     this.listaTecnico.AddRange(lista);
-
                 }
 
-               //// Victor Alves - Melhoria de performance ao clicar no tecnico
-               //if (this.listaTecnico != null && this.listaTecnico.Any())
-               //{
-               //    foreach (var row in this.listaTecnico)
-               //    {
-               //        await ObterEntrega(row.codTec);
-               //    }
-               //}
+                //// Victor Alves - Melhoria de performance ao clicar no tecnico
+                //if (this.listaTecnico != null && this.listaTecnico.Any())
+                //{
+                //    foreach (var row in this.listaTecnico)
+                //    {
+                //        await ObterEntrega(row.codTec);
+                //    }
+                //}
 
-                this.IsBusy = false;
             }
             catch (Exception ex)
             {
-
-                IsBusy = false;
                 var erro = new Mensagem("erro", "Erro", ex.Message);
                 await Shell.Current.CurrentPage.ShowPopupAsync(erro);
             }
-
-            this.IsBusy = false;
+            finally
+            {
+                this.IsBusy = false;
+            }
         }
         public async Task ObterTransporte()
         {
-            this.IsBusy = true;
-            var lista = await _service.ObterTransportes();
-
-            this.listaTranspCompleta.Clear();
-            foreach (var item in lista.OrderBy(x => x.identific))
+            try
             {
-                this.listaTranspCompleta.Add(item);
-            }
-            this.IsBusy = false;
+                this.IsBusy = true;
+                var lista = await _service.ObterTransportes();
 
-            listaTransporteEntra = new(this.listaTranspCompleta);
-            listaTransporteSai = new(this.listaTranspCompleta);
+                this.listaTranspCompleta.Clear();
+                foreach (var item in lista.OrderBy(x => x.identific))
+                {
+                    this.listaTranspCompleta.Add(item);
+                }
+
+                listaTransporteEntra = new(this.listaTranspCompleta);
+                listaTransporteSai = new(this.listaTranspCompleta);
+            }
+            finally
+            {
+                this.IsBusy = false;
+            }
         }
+
         public async Task ObterEntrega(int pCodTec)
         {
             this.IsBusy = true;

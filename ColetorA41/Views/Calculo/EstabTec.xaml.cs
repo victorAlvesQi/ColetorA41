@@ -64,7 +64,7 @@ public partial class EstabTec : ContentPage
 
     protected override bool OnBackButtonPressed()
     {
-        var mensa = new Mensagem("info", "Navega��o", "Utilize a navega��o inclu�da no c�lculo");
+        var mensa = new Mensagem("info", "Navegação", "Utilize a navegação incluída no cálculo");
         Shell.Current.CurrentPage.ShowPopup(mensa);
         return true;
     }

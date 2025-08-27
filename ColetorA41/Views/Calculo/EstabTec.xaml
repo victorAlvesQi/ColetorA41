@@ -45,7 +45,7 @@
             <Border Padding="10" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource dnWhite}">
                 <StackLayout>
                     <Label Text="Estabelecimento" TextColor="{StaticResource dnBlue}"/>
-                    <Picker Title="Selecione um Estabelecimento"
+                    <Picker Title="Selecione um Estabelecimento (2)"
                      TextColor="{StaticResource dnBlue}"   
                      TitleColor="{StaticResource Gray200}"
                      FontAttributes="Bold" FontSize="16"
@@ -60,7 +60,6 @@
                        Radius="1"
                        Opacity="0.8" />
                 </Border.Shadow>
-
             </Border>
 
         </VerticalStackLayout>
@@ -95,8 +94,12 @@
                     ItemsSource="{Binding listaTecnico}" 
                     SelectedItem="{Binding TecnicoSelecionado}"
                     SelectionMode="Single"
+                                
                     RemainingItemsThreshold="4"
-                    ItemsUpdatingScrollMode="KeepItemsInView"
+                                
+                    ItemsUpdatingScrollMode="KeepLastItemInView"
+                                
+                                
                     RemainingItemsThresholdReachedCommand="{Binding CarregarTecnicosEstabelecimentoCommand}"
                     EmptyView="Técnicos do Estabelecimento"
                     VerticalScrollBarVisibility="Always">

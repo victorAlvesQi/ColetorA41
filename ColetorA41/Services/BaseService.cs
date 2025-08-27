@@ -91,16 +91,13 @@ namespace ColetorA41.Services
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Erro na requisição HTTP: {ex.Message}");
-                throw new Exception($"Erro na comunicação com o servidor: {ex.Message}");
+                Debug.WriteLine($"Erro na requisição HTTP: {ex.Message} " + endpoint + stringParam.ToString());
+                throw new Exception($"Erro na comunicação com o servidor: {ex.Message}" + endpoint + stringParam.ToString());
             }
         }
 
-       
-
         protected async Task<TResponse?> PostAsync<TRequest, TResponse>(string metodo, TRequest requestBody = default)
         {
-
             var request = new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri(Path.Combine(_config["BASE_URL"] ?? string.Empty, metodo)) };
             if (requestBody != null)
             {
@@ -130,8 +127,6 @@ namespace ColetorA41.Services
             {
             }
         }
-
-
         public static string StreamToString(Stream stream)
         {
             stream.Position = 0;
