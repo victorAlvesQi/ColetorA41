@@ -66,23 +66,35 @@ namespace ColetorA41.Services
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(25));
                 
                 var response = await _httpClient.GetAsync(endpoint + stringParam.ToString(), cts.Token);
-                
-                if (!response.IsSuccessStatusCode)
-                {
-                    Debug.WriteLine($"HTTP Error: {response.StatusCode} - {response.ReasonPhrase}");
-                    throw new Exception($"Erro HTTP: {response.StatusCode} - {response.ReasonPhrase}");
-                }
-                
+
                 var responseStream = await response.Content.ReadAsStringAsync();
-                
-                if (string.IsNullOrEmpty(responseStream))
+
+                if (response.IsSuccessStatusCode)
                 {
-                    Debug.WriteLine("Resposta vazia da API");
-                    return default;
+                    
+                    var data = JsonConvert.DeserializeObject<T>(responseStream);
+                    return data;
+
+                  //  Debug.WriteLine($"HTTP Error: {response.StatusCode} - {response.ReasonPhrase}");
+                  //  throw new Exception($"Erro HTTP: {response.StatusCode} - {response.ReasonPhrase}");
                 }
-                
-                var data = JsonConvert.DeserializeObject<T>(responseStream);
-                return data;
+                else
+                {
+
+                    try
+                    {
+
+                        dynamic errorObj = JsonConvert.DeserializeObject(responseStream);
+                        string errorMesage = errorObj?.message ?? errorObj?.detailMessage ?? "Error desconhecimento";
+                        string errorCode = errorObj?.Code ?? "";
+
+                        throw new HttpRequestException($"Erro {(int)response.StatusCode}: {errorMesage}");
+                    }
+                    catch (System.Text.Json.JsonException)
+                    {
+                        throw new HttpRequestException($"Erro {(int)response.StatusCode}: {responseStream}");
+                    }
+                }
             }
             catch (OperationCanceledException)
             {
@@ -92,7 +104,9 @@ namespace ColetorA41.Services
             catch (Exception ex)
             {
                 Debug.WriteLine($"Erro na requisição HTTP: {ex.Message} " + endpoint + stringParam.ToString());
-                throw new Exception($"Erro na comunicação com o servidor: {ex.Message}" + endpoint + stringParam.ToString());
+                //throw new Exception($"Erro na comunicação com o servidor: {ex.Message}" + endpoint + stringParam.ToString());
+
+                throw new Exception(ex.Message);
             }
         }
 

@@ -101,7 +101,6 @@ namespace ColetorA41.ViewModel
                 ResetarPaginacaoTecnicos();
 
                 await this.CarregarTecnicosEstabelecimento();
-
                 await this.ObterTransporte();
             }
             finally
@@ -154,7 +153,7 @@ namespace ColetorA41.ViewModel
         #endregion
 
         #region Lista Compartilhadas
-        public ObservableCollection<Estabelecimento> listaEstab { get; private set; } = new();
+       public ObservableCollection<Estabelecimento> listaEstab { get; private set; } = new();
       public ObservableRangeCollection<Tecnico> listaTecnico { get; private set; } = new();
       public ObservableCollection<Enc> listaEnc { get; private set; } = new();
       public ObservableCollection<Transporte> listaTranspCompleta { get; private set; } = new();
@@ -759,33 +758,57 @@ namespace ColetorA41.ViewModel
         }
 
         private bool _temMaisTecnicos = true;
+      //  private bool _carregamentoInicial = true;
 
         private void ResetarPaginacaoTecnicos()
         {
             _temMaisTecnicos = true;
+            IsBusy = false;
+
+           // _carregamentoInicial = true;
             listaTecnico.Clear();
         }
+
 
         [RelayCommand]
         async Task CarregarTecnicosEstabelecimento()
         {
+         /*   if (_carregamentoInicial)
+            {
+                _carregamentoInicial = false;
+                return;
+            }
+         */
+
             if (IsBusy || !_temMaisTecnicos) 
                 return;
          
-            // var lista = await _service.ObterItensCalculoMobile(TipoCalculo, tipoFichaSelecionado, NrProcessSelecionado, listaItensFicha.Count(), 20);
             try
             {
                 IsBusy = true;
 
-                if (_estabSelecionado == null)
-                {
-                    IsBusy = false;
-                    return;
-                }
-                
-                // Erro aqui na busca
-                var lista = await _service.ObterTecEstabMobile(this._estabSelecionado.codEstab, CriterioBuscaTecnico ,listaTecnico.Count(), 20);
+                await CarregarTecnicosEstabelecimentoSemBusy();
+            }
+            catch (Exception ex)
+            {
+                var msg = new Mensagem("erro", "Erro", ex.Message);
+                await Shell.Current.ShowPopupAsync(msg);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
 
+        async Task CarregarTecnicosEstabelecimentoSemBusy()
+        {
+            if (!_temMaisTecnicos || _estabSelecionado == null)
+                return;
+
+            try
+            {
+                // Erro aqui na busca
+                var lista = await _service.ObterTecEstabMobile(this._estabSelecionado.codEstab, CriterioBuscaTecnico, listaTecnico.Count(), 20);
 
                 if (lista != null && lista.Any())
                 {
@@ -807,10 +830,6 @@ namespace ColetorA41.ViewModel
             {
                 var msg = new Mensagem("erro", "Erro", ex.Message);
                 await Shell.Current.ShowPopupAsync(msg);
-            }
-            finally
-            {
-              //  IsBusy = false;
             }
         }
 
@@ -1502,7 +1521,7 @@ namespace ColetorA41.ViewModel
         {
             try
             {
-                this.IsBusy = true;
+              //  this.IsBusy = true;
                 var lista = await _service.ObterTransportes();
 
                 this.listaTranspCompleta.Clear();
@@ -1516,7 +1535,7 @@ namespace ColetorA41.ViewModel
             }
             finally
             {
-                this.IsBusy = false;
+             //   this.IsBusy = false;
             }
         }
 
@@ -1570,12 +1589,27 @@ namespace ColetorA41.ViewModel
         }
         public async Task ObterDados()
         {
-            this.IsBusy = true;
-            //Gerar Numero de Processo se for preciso
-            RowIdOS = await _service46.ObterDados(this.EstabSelecionado.codEstab, this.TecnicoSelecionado.codTec);
-            //Obter Numero Gerado
-            this.NrProcessSelecionado = await _service.ObterNrProcesso(this.EstabSelecionado.codEstab, this.TecnicoSelecionado.codTec);
-            this.IsBusy = false;
+            try
+            {
+                this.IsBusy = true;
+                //Gerar Numero de Processo se for preciso
+
+                RowIdOS = await _service46.ObterDados(this.EstabSelecionado.codEstab, this.TecnicoSelecionado.codTec);
+
+                //Obter Numero Gerado
+                this.NrProcessSelecionado = await _service.ObterNrProcesso(this.EstabSelecionado.codEstab, this.TecnicoSelecionado.codTec);
+
+                this.IsBusy = false;
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                this.IsBusy = false;
+            }
         }
         async Task AtualizaLblBotoes(int tipo)
         {

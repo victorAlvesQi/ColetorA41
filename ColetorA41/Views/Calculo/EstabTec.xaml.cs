@@ -24,6 +24,8 @@ public partial class EstabTec : ContentPage
         {
             Debug.WriteLine("EstabTec: Iniciando carregamento de estabelecimentos");
             
+
+
             // Verificar se o ViewModel está inicializado
             if (_vm == null)
             {
@@ -37,6 +39,7 @@ public partial class EstabTec : ContentPage
                 Debug.WriteLine("EstabTec: listaEstab é null!");
                 return;
             }
+
 
             // Limpar lista antes de carregar
             _vm.listaEstab.Clear();

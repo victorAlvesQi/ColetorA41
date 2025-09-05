@@ -350,24 +350,46 @@ namespace ColetorA41.ViewModel
         [RelayCommand]
         async Task SalvarItemReparo()
         {
-            //Testar numero de serie
-            IsBusy=true;
-            var ok = await _service46.ValidarSerie(ReparoItemDados.itcodigo, ReparoItemDados.numserieit);
-            if (ok.type == "error")
-            {
-                
-                var erro = new Mensagem("error", ok.detailedMessage, ok.message);
-                await Shell.Current.CurrentPage.ShowPopupAsync(erro);
-                //Num serie original
-                ReparoItemDados.numserieit = "000000000000";
-                //return;
-            }
 
-            IsBusy = false;
-            ReparoItemDados.lequivalente = ReparoItemDados.itcodigoequiv != string.Empty;
-            Justificativa = string.Empty;
-            await this.ChamarReparo();
-           
+            try
+            {
+
+                IsBusy = true;
+                
+                if (reparoItemDados == null)
+                {
+                    var erro = new Mensagem("error", "Dados inválidos", "Item de reparo não encontrado");
+                    await Shell.Current.CurrentPage.ShowPopupAsync(erro);
+                    return;
+                }
+
+                var ok = await _service46.ValidarSerie(ReparoItemDados.itcodigo, ReparoItemDados.numserieit);
+
+                if (ok.type == "error")
+                {
+                    var erro = new Mensagem("error", ok.detailedMessage, ok.message);
+                    await Shell.Current.CurrentPage.ShowPopupAsync(erro);
+                    //Num serie original
+                    ReparoItemDados.numserieit = "000000000000";
+                    //return;
+                }
+                
+                ReparoItemDados.lequivalente = ReparoItemDados.itcodigoequiv != string.Empty;
+                
+                Justificativa = string.Empty;
+
+                await this.ChamarReparo();
+            }
+            catch (Exception ex)
+            {
+                var erro = new Mensagem("error", "Erro inesperado", $"Erro ao salvar item {ex.Message}");
+
+                await Shell.Current.CurrentPage.ShowPopupAsync(erro);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]

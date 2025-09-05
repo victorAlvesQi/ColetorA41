@@ -17,6 +17,7 @@ public partial class DadosNF : ContentPage
     {
 
         base.OnAppearing();
+
         /*
         if ((vm.EstabSelecionado == null) || (vm.TecnicoSelecionado == null))
         {

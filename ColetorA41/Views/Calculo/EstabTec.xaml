@@ -45,7 +45,7 @@
             <Border Padding="10" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource dnWhite}">
                 <StackLayout>
                     <Label Text="Estabelecimento" TextColor="{StaticResource dnBlue}"/>
-                    <Picker Title="Selecione um Estabelecimento (2)"
+                    <Picker Title="Selecione um Estabelecimento"
                      TextColor="{StaticResource dnBlue}"   
                      TitleColor="{StaticResource Gray200}"
                      FontAttributes="Bold" FontSize="16"
@@ -95,12 +95,13 @@
                     SelectedItem="{Binding TecnicoSelecionado}"
                     SelectionMode="Single"
                                 
-                    RemainingItemsThreshold="4"
+                    RemainingItemsThreshold="2"
                                 
-                    ItemsUpdatingScrollMode="KeepLastItemInView"
+                    ItemsUpdatingScrollMode="KeepItemsInView"
                                 
                                 
                     RemainingItemsThresholdReachedCommand="{Binding CarregarTecnicosEstabelecimentoCommand}"
+                                
                     EmptyView="Técnicos do Estabelecimento"
                     VerticalScrollBarVisibility="Always">
                     <CollectionView.ItemTemplate>
